@@ -1,6 +1,7 @@
 import { getDb } from '../../core/firebase.js';
 import { getState, setState, subscribe } from '../../core/state.js';
 import { escapeHtml, clearContainer, formatDate } from '../../utils/dom-utils.js';
+import { initWorkEditor, openWorkEditor, toggleWorkEditor } from './work-editor.js';
 
 let unsubscribeWorks = null;
 let allWorksCache = [];
@@ -9,12 +10,23 @@ let allWorksCache = [];
  * ダッシュボードの初期化
  */
 export function initDashboard() {
+    // 作品エディタの初期化
+    initWorkEditor();
+
     // 状態を監視して、TOPタブが表示されたらデータを取得
     subscribe((state) => {
         if (state.currentTab === 'top') {
             refreshWorkList(state);
         }
     });
+
+    // 新規作成ボタン
+    const newWorkBtn = document.getElementById('new-work-btn');
+    if (newWorkBtn) {
+        newWorkBtn.addEventListener('click', () => {
+            openWorkEditor();
+        });
+    }
 
     // ソート順の変更監視
     const sortEl = document.getElementById('work-sort-order');
@@ -37,6 +49,9 @@ export function initDashboard() {
 function refreshWorkList(state) {
     const container = document.getElementById('work-grid-container');
     if (!container) return;
+
+    // リスト取得時はエディタを閉じてリストを表示する
+    toggleWorkEditor(false);
 
     if (unsubscribeWorks) {
         unsubscribeWorks();
@@ -105,7 +120,10 @@ function createWorkCard(work) {
     card.innerHTML = `
         <div style="display:flex; justify-content:space-between; align-items:flex-start;">
             <h3 style="margin:0;">${escapeHtml(work.title || "無題")}</h3>
-            <button class="star-btn ${work.pinned ? 'active' : ''}" title="お気に入り">${work.pinned ? '★' : '☆'}</button>
+            <div style="display:flex; gap:8px; align-items:center;">
+                <button class="btn-retro edit-btn" style="font-size:0.7rem; padding:2px 6px;">編集</button>
+                <button class="star-btn ${work.pinned ? 'active' : ''}" title="お気に入り">${work.pinned ? '★' : '☆'}</button>
+            </div>
         </div>
         <div style="margin:5px 0;">${tagsHtml}</div>
         <div class="work-meta" style="display:flex; flex-direction:column; gap:2px; font-size:0.75rem; margin-top:auto;">
@@ -114,15 +132,22 @@ function createWorkCard(work) {
         </div>
     `;
 
-    // カードクリック時の挙動 (スターボタン以外)
+    // カードクリック時の挙動 (ボタン以外)
     card.addEventListener('click', (e) => {
-        if (e.target.closest('.star-btn')) return;
+        if (e.target.closest('button')) return;
 
         // 作品を選択状態にする
         setState({ selectedWorkId: work.id });
         // 最後に開いていたタブがあればそこへ、なければプロットへ
         const nextTab = work.lastTab || 'plot';
         setState({ currentTab: nextTab });
+    });
+
+    // 編集ボタンの挙動
+    const editBtn = card.querySelector('.edit-btn');
+    editBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        openWorkEditor(work.id);
     });
 
     // スターボタンの挙動

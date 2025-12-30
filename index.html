@@ -44,22 +44,106 @@
         <main class="content-area">
             <!-- TOP Tab -->
             <section id="tab-top" class="tab-content active">
-                <div style="display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:10px;">
-                    <h2 class="retro-subtitle" style="margin-bottom:0;">作品一覧</h2>
-                    <div style="display:flex; align-items:center; gap:10px;">
-                        <label style="font-size:0.75rem; color:#888;">並び替え:</label>
-                        <select id="work-sort-order" class="select-retro"
-                            style="font-size:0.85rem; padding:4px 8px; background:#111; color:#fff;">
-                            <option value="updatedAt_desc">更新日（新）</option>
-                            <option value="updatedAt_asc">更新日（古）</option>
-                            <option value="createdAt_desc">作成日（新）</option>
-                            <option value="createdAt_asc">作成日（古）</option>
-                        </select>
+                <div id="work-list-view">
+                    <div style="display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:10px;">
+                        <h2 class="retro-subtitle" style="margin-bottom:0;">作品一覧</h2>
+                        <div style="display:flex; align-items:center; gap:10px;">
+                            <button id="new-work-btn" class="btn-retro save"
+                                style="padding:4px 12px; font-size:0.9rem;">＋新規作成</button>
+                            <label style="font-size:0.75rem; color:#888;">並び替え:</label>
+                            <select id="work-sort-order" class="select-retro"
+                                style="font-size:0.85rem; padding:4px 8px; background:#111; color:#fff;">
+                                <option value="updatedAt_desc">更新日（新）</option>
+                                <option value="updatedAt_asc">更新日（古）</option>
+                                <option value="createdAt_desc">作成日（新）</option>
+                                <option value="createdAt_asc">作成日（古）</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div id="work-grid-container" class="work-grid">
+                        <!-- Loaded via dashboard.js -->
+                        <div style="text-align:center; padding:40px; color:#666;">読み込み中...</div>
                     </div>
                 </div>
-                <div id="work-grid-container" class="work-grid">
-                    <!-- Loaded via dashboard.js -->
-                    <div style="text-align:center; padding:40px; color:#666;">読み込み中...</div>
+
+                <!-- Work Editor/Setup (Hidden by default) -->
+                <div id="work-editor-view" style="display:none;">
+                    <div style="display:flex; gap:10px; margin-bottom:20px;">
+                        <button id="work-editor-back" class="btn-retro back">戻る</button>
+                        <h2 id="work-editor-title-disp" class="retro-subtitle"
+                            style="margin:0; flex:1; text-align:center;">作品情報の作成</h2>
+                        <button id="work-editor-save" class="btn-retro save">保存</button>
+                    </div>
+
+                    <div class="card-retro">
+                        <div class="form-group mb-20">
+                            <label class="gold-bold">作品タイトル</label>
+                            <input type="text" id="work-f-title" placeholder="タイトルを入力..."
+                                style="width:100%; padding:10px; background:#111; border:1px solid #444; color:#fff; font-size:1.2rem;">
+                        </div>
+
+                        <div class="form-group mb-20">
+                            <div style="display:flex; justify-content:space-between;">
+                                <label class="gold-bold">キャッチコピー</label>
+                                <span id="work-f-catch-count" style="font-size:0.75rem; color:#888;">残35字</span>
+                            </div>
+                            <input type="text" id="work-f-catchphrase" maxlength="35" placeholder="読者を惹きつける一言..."
+                                style="width:100%; padding:8px; background:#111; border:1px solid #444; color:#fff;">
+                        </div>
+
+                        <div class="form-group mb-20">
+                            <label class="gold-bold">あらすじ・概要</label>
+                            <textarea id="work-f-description" placeholder="ストーリーの概要を入力..."
+                                style="width:100%; height:120px; padding:8px; background:#111; border:1px solid #444; color:#fff; resize:none;"></textarea>
+                        </div>
+
+                        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:20px; margin-bottom:20px;">
+                            <div>
+                                <label class="gold-bold">作品の長さ</label>
+                                <div style="display:flex; gap:10px; margin-top:5px;">
+                                    <label><input type="radio" name="work-length" value="long" checked> 長編</label>
+                                    <label><input type="radio" name="work-length" value="short"> 短編</label>
+                                </div>
+                            </div>
+                            <div>
+                                <label class="gold-bold">作品種別</label>
+                                <div style="display:flex; gap:10px; margin-top:5px;">
+                                    <label><input type="radio" name="work-type" value="original" checked> オリジナル</label>
+                                    <label><input type="radio" name="work-type" value="derivative"> 二次創作</label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:20px; margin-bottom:20px;">
+                            <div>
+                                <label class="gold-bold">執筆ステータス</label>
+                                <div style="display:flex; flex-wrap:wrap; gap:10px; margin-top:5px;">
+                                    <label><input type="radio" name="work-status" value="in-progress" checked>
+                                        制作中</label>
+                                    <label><input type="radio" name="work-status" value="completed"> 完了</label>
+                                    <label><input type="radio" name="work-status" value="suspended"> 中断</label>
+                                </div>
+                            </div>
+                            <div>
+                                <label class="gold-bold">レーティング</label>
+                                <div style="display:flex; flex-wrap:wrap; gap:10px; margin-top:5px;">
+                                    <label><input type="checkbox" name="work-rating" value="sexual"> 性描写</label>
+                                    <label><input type="checkbox" name="work-rating" value="violent"> 暴力</label>
+                                    <label><input type="checkbox" name="work-rating" value="cruel"> 残酷</label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="gold-bold">AI利用状況</label>
+                            <div style="display:flex; flex-wrap:wrap; gap:10px; margin-top:5px;">
+                                <label><input type="radio" name="work-ai" value="none" checked> なし</label>
+                                <label><input type="radio" name="work-ai" value="assist"> 補助</label>
+                                <label><input type="radio" name="work-ai" value="partial"> 一部</label>
+                                <label><input type="radio" name="work-ai" value="main"> 本文</label>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </section>
 
