@@ -112,7 +112,7 @@ body {
 
 .gold-bold {
     font-weight: bold;
-    color: var(--clr-save);
+    color: #fff;
     margin-bottom: 5px;
     display: block;
 }
