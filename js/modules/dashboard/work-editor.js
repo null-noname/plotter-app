@@ -29,8 +29,10 @@ export function initWorkEditor() {
 
     // 状態監視：作品情報タブが開かれたらフォームを描画
     subscribe((state) => {
+        console.log('[WorkEditor] State Change:', state.currentTab, state.selectedWorkId);
         if (state.currentTab === 'work-info' && state.selectedWorkId) {
             if (renderedWorkId !== state.selectedWorkId) {
+                console.log('[WorkEditor] Rendering Tab for:', state.selectedWorkId);
                 renderWorkInfoTab(state.selectedWorkId);
             }
         } else if (state.currentTab === 'top') {

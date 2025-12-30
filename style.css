@@ -40,7 +40,8 @@ body {
 }
 
 .main-header {
-    height: 50px;
+    min-height: 50px;
+    height: auto;
     background: #000;
     display: flex;
     align-items: center;
