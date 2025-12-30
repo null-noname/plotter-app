@@ -45,19 +45,21 @@
             <!-- TOP Tab -->
             <section id="tab-top" class="tab-content active">
                 <div id="work-list-view">
-                    <div
-                        style="display:grid; grid-template-columns: 1fr 1fr 1fr; align-items:center; margin-bottom:15px; border-bottom:1px solid #333; padding-bottom:10px;">
-                        <div style="text-align:left;">
+                    <div style="margin-bottom:20px; border-bottom:1px solid #333; padding-bottom:15px;">
+                        <!-- 1列目: 作品一覧 (左寄せ) -->
+                        <div style="text-align:left; margin-bottom:10px;">
                             <h2 class="retro-subtitle" style="margin:0; font-size:1.1rem; color:#8d9e26;">作品一覧</h2>
                         </div>
-                        <div style="text-align:center;">
+                        <!-- 2列目: 新規作成 (中央寄せ) -->
+                        <div style="text-align:center; margin-bottom:10px;">
                             <button id="new-work-btn" class="btn-retro save"
-                                style="padding:4px 16px; font-size:0.9rem;">＋新規作成</button>
+                                style="padding:6px 24px; font-size:1rem;">＋新規作成</button>
                         </div>
+                        <!-- 3列目: ソート (右寄せ) -->
                         <div style="display:flex; justify-content:flex-end; align-items:center; gap:8px;">
-                            <label style="font-size:0.7rem; color:#666;">並び替え:</label>
+                            <label style="font-size:0.75rem; color:#666;">並び替え:</label>
                             <select id="work-sort-order" class="select-retro"
-                                style="font-size:0.8rem; padding:4px 8px; background:#111; color:#fff;">
+                                style="font-size:0.85rem; padding:4px 8px; background:#111; color:#fff;">
                                 <option value="updatedAt_desc">更新日（新）</option>
                                 <option value="updatedAt_asc">更新日（古）</option>
                                 <option value="createdAt_desc">作成日（新）</option>
