@@ -37,11 +37,15 @@ function refreshMemoList(state) {
         unsubscribeMemos = null;
     }
 
-    if (!state.currentUser) return;
+    if (!state.selectedWorkId) {
+        container.innerHTML = '<div style="text-align:center; padding:40px; color:#666;">作品を選択してください</div>';
+        return;
+    }
 
     const db = getDb();
-    unsubscribeMemos = db.collection("commonMemos")
-        .where("uid", "==", state.currentUser.uid).orderBy("order", "asc")
+    // 共通メモから作品別のメモへ修正
+    unsubscribeMemos = db.collection("works").doc(state.selectedWorkId)
+        .collection("memos").orderBy("order", "asc")
         .onSnapshot(snap => {
             allMemosCache = [];
             snap.forEach(doc => allMemosCache.push({ id: doc.id, ...doc.data() }));

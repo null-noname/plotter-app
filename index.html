@@ -34,23 +34,25 @@
 
         <!-- Tab Navigation -->
         <nav class="tab-nav">
-            <button id="tab-btn-plot" class="tab-btn active">プロット</button>
+            <button id="tab-btn-top" class="tab-btn active">TOP</button>
+            <button id="tab-btn-plot" class="tab-btn">プロット</button>
             <button id="tab-btn-char" class="tab-btn">登場人物</button>
             <button id="tab-btn-memo" class="tab-btn">メモ</button>
         </nav>
 
         <!-- Tab Contents -->
         <main class="content-area">
-            <!-- Plot Tab -->
-            <section id="tab-plot" class="tab-content active">
-                <div id="plot-work-selector" style="margin-bottom:20px;">
-                    <label style="font-size:0.8rem; color:#888;">作品を選択:</label>
-                    <select id="plot-work-dropdown" class="select-retro"
-                        style="width:100%; font-size:1.1rem; padding:8px; background:#111; color:#fff;">
-                        <option value="">作品を選択してください</option>
-                    </select>
+            <!-- TOP Tab -->
+            <section id="tab-top" class="tab-content active">
+                <h2 class="retro-subtitle">作品一覧</h2>
+                <div id="work-grid-container" class="work-grid">
+                    <!-- Loaded via dashboard.js -->
+                    <div style="text-align:center; padding:40px; color:#666;">読み込み中...</div>
                 </div>
+            </section>
 
+            <!-- Plot Tab -->
+            <section id="tab-plot" class="tab-content">
                 <div id="plot-list-view">
                     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
                         <h2 class="retro-subtitle">プロット一覧</h2>
@@ -114,7 +116,8 @@
                                     style="width:100px; height:100px; background:#111; border:2px solid #555; display:flex; align-items:center; justify-content:center; overflow:hidden;">
                                     <span style="color:#444;">No Image</span>
                                 </div>
-                                <button class="btn-retro" style="font-size:0.7rem; padding:4px 8px; margin-top:8px;">画像変更</button>
+                                <button class="btn-retro"
+                                    style="font-size:0.7rem; padding:4px 8px; margin-top:8px;">画像変更</button>
                                 <input type="file" id="char-icon-input" style="display:none;" accept="image/*">
                             </div>
                             <div style="flex:1;">

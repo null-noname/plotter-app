@@ -39,7 +39,7 @@ function renderScreen(state) {
  * アクティブなタブの表示・非表示
  */
 function renderTabs(state) {
-    const tabs = ['plot', 'char', 'memo'];
+    const tabs = ['top', 'plot', 'char', 'memo']; // 'top'タブを追加
     tabs.forEach(tab => {
         const btn = document.getElementById(`tab-btn-${tab}`);
         const content = document.getElementById(`tab-${tab}`);
@@ -58,7 +58,7 @@ function renderTabs(state) {
  * タブボタンにクリックイベントを設定
  */
 function setupTabListeners() {
-    const tabs = ['plot', 'char', 'memo'];
+    const tabs = ['top', 'plot', 'char', 'memo']; // 'top'タブを追加
     tabs.forEach(tab => {
         const btn = document.getElementById(`tab-btn-${tab}`);
         if (btn) {

@@ -15,55 +15,9 @@ export function initPlotList() {
     // 状態を監視して、作品選択やタブが変わったら再描画
     subscribe((state) => {
         if (state.currentTab === 'plot') {
-            refreshWorkDropdown(state);
             refreshPlotList(state);
         }
     });
-
-    // ワークドロップダウンの変更イベント
-    const dropdown = document.getElementById('plot-work-dropdown');
-    if (dropdown) {
-        dropdown.addEventListener('change', (e) => {
-            setState({ selectedWorkId: e.target.value });
-        });
-    }
-}
-
-/**
- * 作品選択ドロップダウンの更新
- */
-async function refreshWorkDropdown(state) {
-    if (!state.currentUser) return;
-
-    const db = getDb();
-    const dropdown = document.getElementById('plot-work-dropdown');
-    if (!dropdown) return;
-
-    // すでに選択中の場合は中身を書き換えない（ループ防止）
-    if (dropdown.options.length > 1 && dropdown.value === state.selectedWorkId) {
-        return;
-    }
-
-    try {
-        const worksSnap = await db.collection("works")
-            .where("uid", "==", state.currentUser.uid)
-            .get();
-
-        const currentVal = state.selectedWorkId;
-        dropdown.innerHTML = '<option value="">作品を選択してください</option>';
-
-        worksSnap.forEach(doc => {
-            const data = doc.data();
-            const opt = document.createElement('option');
-            opt.value = doc.id;
-            opt.textContent = data.title;
-            dropdown.appendChild(opt);
-        });
-
-        dropdown.value = currentVal || "";
-    } catch (error) {
-        console.error('[PlotList] 作品一覧の取得に失敗:', error);
-    }
 }
 
 /**

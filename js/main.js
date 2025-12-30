@@ -12,6 +12,7 @@ import { initCharList } from './modules/characters/char-list.js';
 import { initCharEditor } from './modules/characters/char-editor.js';
 import { initMemoList } from './modules/memo/memo-list.js';
 import { initMemoEditor } from './modules/memo/memo-editor.js';
+import { initDashboard } from './modules/dashboard/dashboard.js';
 
 document.addEventListener('DOMContentLoaded', async () => {
     console.log('[Main] アプリケーションの初期化を開始します...');
@@ -33,6 +34,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         initCharEditor();
         initMemoList();
         initMemoEditor();
+        initDashboard();
 
         console.log('[Main] 初期化プロセスが完了しました。');
     } catch (error) {

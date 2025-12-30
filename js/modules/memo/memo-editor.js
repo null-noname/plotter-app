@@ -37,8 +37,10 @@ export async function openMemoEditor(id = null) {
     const contentInput = document.getElementById('memo-content');
 
     if (id) {
+        const state = getState();
         const db = getDb();
-        const doc = await db.collection("commonMemos").doc(id).get();
+        const doc = await db.collection("works").doc(state.selectedWorkId)
+            .collection("memos").doc(id).get();
         if (doc.exists) {
             const data = doc.data();
             titleInput.value = data.title || "";
@@ -80,14 +82,14 @@ export async function saveMemo() {
     };
 
     const db = getDb();
-    const collection = db.collection("commonMemos");
+    const collection = db.collection("works").doc(state.selectedWorkId).collection("memos");
 
     try {
         if (currentMemoId) {
             await collection.doc(currentMemoId).update(data);
         } else {
             // 新規作成時のオーダー設定
-            const snap = await collection.where("uid", "==", state.currentUser.uid).get();
+            const snap = await collection.get();
             data.order = snap.size;
             data.createdAt = firebase.firestore.FieldValue.serverTimestamp();
             await collection.add(data);
@@ -105,9 +107,11 @@ export async function saveMemo() {
 export async function deleteMemo(id) {
     if (!confirm("このメモを削除しますか？")) return;
 
+    const state = getState();
     const db = getDb();
     try {
-        await db.collection("commonMemos").doc(id).delete();
+        await db.collection("works").doc(state.selectedWorkId)
+            .collection("memos").doc(id).delete();
     } catch (error) {
         console.error('[MemoEditor] 削除エラー:', error);
     }
@@ -119,10 +123,10 @@ export async function deleteMemo(id) {
 export async function moveMemo(id, dir) {
     const state = getState();
     const db = getDb();
-    const collection = db.collection("commonMemos");
+    const collection = db.collection("works").doc(state.selectedWorkId).collection("memos");
 
     try {
-        const snap = await collection.where("uid", "==", state.currentUser.uid).orderBy("order", "asc").get();
+        const snap = await collection.orderBy("order", "asc").get();
         const memos = [];
         snap.forEach(doc => memos.push({ id: doc.id, ...doc.data() }));
 
