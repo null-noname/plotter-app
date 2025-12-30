@@ -29,10 +29,8 @@ export function initWorkEditor() {
 
     // 状態監視：作品情報タブが開かれたらフォームを描画
     subscribe((state) => {
-        console.log('[WorkEditor] State Change:', state.currentTab, state.selectedWorkId);
         if (state.currentTab === 'work-info' && state.selectedWorkId) {
             if (renderedWorkId !== state.selectedWorkId) {
-                console.log('[WorkEditor] Rendering Tab for:', state.selectedWorkId);
                 renderWorkInfoTab(state.selectedWorkId);
             }
         } else if (state.currentTab === 'top') {
@@ -80,15 +78,36 @@ async function renderWorkInfoTab(workId) {
     const catchInput = container.querySelector('#info-f-catchphrase');
     if (catchInput) catchInput.addEventListener('input', (e) => updateCatchCount(e.target, container.querySelector('#info-f-catch-count')));
 
+    // 認証待ち
+    const auth = getAuth();
+    if (!auth.currentUser) {
+        console.log('[WorkEditor] 認証待ち...');
+        // 認証が完了するまで少し待機（または再試行）
+        let retryCount = 0;
+        while (!auth.currentUser && retryCount < 10) {
+            await new Promise(resolve => setTimeout(resolve, 500));
+            retryCount++;
+        }
+    }
+
+    if (!auth.currentUser) {
+        console.error('[WorkEditor] 認証が完了しなかったため、読み込みを中止します。');
+        container.innerHTML = '<div style="text-align:center; padding:40px; color:var(--clr-delete);">認証エラーが発生しました。再ログインしてください。</div>';
+        return;
+    }
+
     // データ読み込み
     const db = getDb();
     try {
         const doc = await db.collection("works").doc(workId).get();
         if (doc.exists) {
             populateForm(container, 'info', doc.data());
+        } else {
+            container.innerHTML = '<div style="text-align:center; padding:40px; color:#666;">作品が見つかりませんでした。</div>';
         }
     } catch (error) {
         console.error('[WorkEditor] 読み込み失敗:', error);
+        container.innerHTML = '<div style="text-align:center; padding:40px; color:var(--clr-delete);">データの読み込みに失敗しました。</div>';
     }
 }
 

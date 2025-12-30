@@ -5,10 +5,10 @@
 
 // 状態の初期値
 const state = {
-    selectedWorkId: null,
-    currentTab: localStorage.getItem('plotter_currentTab') || 'top', // localStorageから復元、デフォルトはtop
+    selectedWorkId: localStorage.getItem('plotter_selectedWorkId'), // localStorageから復元
+    currentTab: localStorage.getItem('plotter_currentTab') || 'top',
     currentUser: null,
-    listeners: [] // 状態変更を監視するリスナー
+    listeners: []
 };
 
 /**
@@ -20,6 +20,14 @@ export function setState(newState) {
     // タブが変更された場合はlocalStorageに保存
     if (newState.currentTab) {
         localStorage.setItem('plotter_currentTab', newState.currentTab);
+    }
+    // 作品IDが変更された場合も保存
+    if (newState.hasOwnProperty('selectedWorkId')) {
+        if (state.selectedWorkId) {
+            localStorage.setItem('plotter_selectedWorkId', state.selectedWorkId);
+        } else {
+            localStorage.removeItem('plotter_selectedWorkId');
+        }
     }
 
     console.log('[State] 更新:', newState);
