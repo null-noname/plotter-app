@@ -41,9 +41,9 @@ function refreshWorkList(state) {
     if (!state.currentUser) return;
 
     const db = getDb();
+    // 取得を安定させるためorderByを一旦削除（インデックスエラー回避）
     unsubscribeWorks = db.collection("works")
         .where("uid", "==", state.currentUser.uid)
-        .orderBy("updatedAt", "desc")
         .onSnapshot(snap => {
             renderWorkCards(snap, container);
         }, error => {
@@ -90,8 +90,9 @@ function createWorkCard(work) {
     card.addEventListener('click', () => {
         // 作品を選択状態にする
         setState({ selectedWorkId: work.id });
-        // プロットタブに切り替える
-        setState({ currentTab: 'plot' });
+        // 最後に開いていたタブがあればそこへ、なければプロットへ
+        const nextTab = work.lastTab || 'plot';
+        setState({ currentTab: nextTab });
     });
 
     return card;
