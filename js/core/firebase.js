@@ -4,12 +4,12 @@
  */
 
 const firebaseConfig = {
-    apiKey: "AIzaSyDealKaPyIcqUIujJhvsWERxGm0zSBD1jw",
-    authDomain: "plotter-app-dbb21.firebaseapp.com",
-    projectId: "plotter-app-dbb21",
-    storageBucket: "plotter-app-dbb21.firebasestorage.app",
-    messagingSenderId: "483491444496",
-    appId: "1:483491444496:web:56fa556a709348339fd795"
+    apiKey: "AIzaSyDaXyH96jd-k3r1MRaDiN9KWo2oN2lpaW4",
+    authDomain: "editor-app-29ca6.firebaseapp.com",
+    projectId: "editor-app-29ca6",
+    storageBucket: "editor-app-29ca6.firebasestorage.app",
+    messagingSenderId: "666399306180",
+    appId: "1:666399306180:web:619b5765655311d4a03491"
 };
 
 // インスタンスのキャッシュ
