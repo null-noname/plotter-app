@@ -40,18 +40,23 @@ function renderScreen(state) {
  * アクティブなタブの表示・非表示
  */
 function renderTabs(state) {
-    const tabs = ['top', 'plot', 'char', 'memo']; // 'top'タブを追加
-    tabs.forEach(tab => {
-        const btn = document.getElementById(`tab-btn-${tab}`);
-        const content = document.getElementById(`tab-${tab}`);
-        if (btn) btn.classList.toggle('active', state.currentTab === tab);
-        if (content) content.classList.toggle('active', state.currentTab === tab);
+    const tabButtons = document.querySelectorAll('.tab-nav .tab-btn');
+    const currentTab = state.currentTab || 'top';
+
+    tabButtons.forEach(btn => {
+        const tabName = btn.getAttribute('data-tab');
+        btn.classList.toggle('active', currentTab === tabName);
+
+        const content = document.getElementById(`tab-${tabName}`);
+        if (content) {
+            content.classList.toggle('active', currentTab === tabName);
+        }
     });
 
     // TOPタブの場合はナビゲーションを隠す
     const nav = document.querySelector('.tab-nav');
     if (nav) {
-        if (state.currentTab === 'top') nav.classList.add('hidden');
+        if (currentTab === 'top') nav.classList.add('hidden');
         else nav.classList.remove('hidden');
     }
 }
@@ -60,14 +65,12 @@ function renderTabs(state) {
  * タブボタンにクリックイベントを設定
  */
 function setupTabListeners() {
-    const tabs = ['top', 'plot', 'char', 'memo']; // 'top'タブを追加
-    tabs.forEach(tab => {
-        const btn = document.getElementById(`tab-btn-${tab}`);
-        if (btn) {
-            btn.addEventListener('click', () => {
-                setState({ currentTab: tab });
-            });
-        }
+    const tabButtons = document.querySelectorAll('.tab-nav .tab-btn');
+    tabButtons.forEach(btn => {
+        const tabName = btn.getAttribute('data-tab');
+        btn.addEventListener('click', () => {
+            setState({ currentTab: tabName });
+        });
     });
 }
 

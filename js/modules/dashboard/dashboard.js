@@ -1,7 +1,7 @@
 import { getDb } from '../../core/firebase.js';
 import { getState, setState, subscribe } from '../../core/state.js';
 import { escapeHtml, clearContainer, formatDate } from '../../utils/dom-utils.js';
-import { initWorkEditor, openWorkEditor, toggleWorkEditor } from './work-editor.js';
+import { initWorkEditor, openNewWorkEditor } from './work-editor.js';
 
 let unsubscribeWorks = null;
 let allWorksCache = [];
@@ -24,7 +24,7 @@ export function initDashboard() {
     const newWorkBtn = document.getElementById('new-work-btn');
     if (newWorkBtn) {
         newWorkBtn.addEventListener('click', () => {
-            openWorkEditor();
+            openNewWorkEditor();
         });
     }
 
@@ -49,9 +49,6 @@ export function initDashboard() {
 function refreshWorkList(state) {
     const container = document.getElementById('work-grid-container');
     if (!container) return;
-
-    // リスト取得時はエディタを閉じてリストを表示する
-    toggleWorkEditor(false);
 
     if (unsubscribeWorks) {
         unsubscribeWorks();
@@ -143,11 +140,14 @@ function createWorkCard(work) {
         setState({ currentTab: nextTab });
     });
 
-    // 編集ボタンの挙動
+    // 編集ボタンの挙動：カードクリックと同じ（作品を選択して前回タブへ）
     const editBtn = card.querySelector('.edit-btn');
     editBtn.addEventListener('click', (e) => {
         e.stopPropagation();
-        openWorkEditor(work.id);
+
+        setState({ selectedWorkId: work.id });
+        const nextTab = work.lastTab || 'plot';
+        setState({ currentTab: nextTab });
     });
 
     // スターボタンの挙動
