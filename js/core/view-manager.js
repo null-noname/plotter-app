@@ -18,6 +18,13 @@ export function initViewManager() {
 
     // タブボタンのイベント紐付け
     setupTabListeners();
+
+    // TOP画面に戻るボタンのイベント
+    document.addEventListener('click', (e) => {
+        if (e.target.classList.contains('back-to-top')) {
+            setState({ currentTab: 'top', selectedWorkId: null });
+        }
+    });
 }
 
 /**
