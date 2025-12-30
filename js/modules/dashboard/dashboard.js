@@ -120,15 +120,15 @@ function createWorkCard(work) {
     card.innerHTML = `
         <div style="display:flex; justify-content:space-between; align-items:flex-start;">
             <h3 style="margin:0;">${escapeHtml(work.title || "無題")}</h3>
-            <div style="display:flex; gap:8px; align-items:center;">
-                <button class="btn-retro edit-btn" style="font-size:0.7rem; padding:2px 6px;">編集</button>
-                <button class="star-btn ${work.pinned ? 'active' : ''}" title="お気に入り">${work.pinned ? '★' : '☆'}</button>
-            </div>
+            <button class="star-btn ${work.pinned ? 'active' : ''}" title="お気に入り">${work.pinned ? '★' : '☆'}</button>
         </div>
         <div style="margin:5px 0;">${tagsHtml}</div>
-        <div class="work-meta" style="display:flex; flex-direction:column; gap:2px; font-size:0.75rem; margin-top:auto;">
-            <span>作成日: ${formatDate(work.createdAt)}</span>
-            <span>更新日: ${formatDate(work.updatedAt, true)}</span>
+        <div class="work-meta" style="display:flex; justify-content:space-between; align-items:flex-end; gap:2px; font-size:0.75rem; margin-top:auto;">
+            <div style="display:flex; flex-direction:column; gap:2px;">
+                <span>作成日: ${formatDate(work.createdAt)}</span>
+                <span>更新日: ${formatDate(work.updatedAt, true)}</span>
+            </div>
+            <button class="btn-retro edit-btn" style="font-size:0.7rem; padding:4px 8px;">編集</button>
         </div>
     `;
 
