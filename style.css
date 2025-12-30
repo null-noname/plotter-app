@@ -249,16 +249,20 @@ select {
     font-size: 0.75rem;
     margin-right: 5px;
     border-radius: 4px;
-    background: transparent;
+    background: rgba(255, 255, 255, 0.05);
+    /* ほんの少し背景をつける */
     font-weight: bold;
+    box-sizing: border-box;
 }
 
 .tag-long {
     color: #ff8c00;
+    border-color: #ff8c00;
 }
 
 .tag-short {
     color: #87ceeb;
+    border-color: #87ceeb;
 }
 
 /* Favorite/Star Button */

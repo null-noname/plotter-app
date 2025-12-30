@@ -6,7 +6,7 @@
 // 状態の初期値
 const state = {
     selectedWorkId: null,
-    currentTab: 'plot',
+    currentTab: localStorage.getItem('plotter_currentTab') || 'top', // localStorageから復元、デフォルトはtop
     currentUser: null,
     listeners: [] // 状態変更を監視するリスナー
 };
@@ -16,6 +16,12 @@ const state = {
  */
 export function setState(newState) {
     Object.assign(state, newState);
+
+    // タブが変更された場合はlocalStorageに保存
+    if (newState.currentTab) {
+        localStorage.setItem('plotter_currentTab', newState.currentTab);
+    }
+
     console.log('[State] 更新:', newState);
     notifyListeners();
 }
