@@ -4,12 +4,12 @@
  */
 
 const firebaseConfig = {
-    apiKey: "AIzaSyDc5HZ1PVW7H8-Pe8PBoY_bwCMm0jd5_PU",
-    authDomain: "story-builder-app.firebaseapp.com",
-    projectId: "story-builder-app",
-    storageBucket: "story-builder-app.firebasestorage.app",
-    messagingSenderId: "763153451684",
-    appId: "1:763153451684:web:37a447d4cafb4abe41f431"
+    apiKey: "AIzaSyDealKaPyIcqUIujJhvsWERxGm0zSBD1jw",
+    authDomain: "plotter-app-dbb21.firebaseapp.com",
+    projectId: "plotter-app-dbb21",
+    storageBucket: "plotter-app-dbb21.firebasestorage.app",
+    messagingSenderId: "483491444496",
+    appId: "1:483491444496:web:56fa556a709348339fd795"
 };
 
 // インスタンスのキャッシュ
@@ -30,6 +30,9 @@ export function initFirebase() {
     db = firebase.firestore();
     auth = firebase.auth();
     storage = firebase.storage();
+
+    // 永続性の設定 (ブラウザを閉じてもログインを維持)
+    auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
 
     console.log('[Firebase] 初期化完了');
     return { app, db, auth, storage };
