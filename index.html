@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>プロッター</title>
+
+    <!-- Firebase SDK Compat (CDN) -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-storage-compat.js"></script>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <!-- Login Screen -->
+    <div id="login-screen" class="view-container">
+        <div class="card-retro" style="text-align: center; padding: 40px;">
+            <h1 class="title-bar">プロッター</h1>
+            <p style="margin-bottom: 30px; color: #888;">作品設定・キャラクター管理ツール</p>
+            <button id="google-login-btn" class="btn-retro large blue">Googleでログイン</button>
+        </div>
+    </div>
+
+    <!-- Main App -->
+    <div id="main-app" style="display: none;">
+        <header class="main-header">
+            <span class="app-logo">プロッター</span>
+            <button class="btn-icon" style="background: transparent; color: #888;">ログアウト</button>
+        </header>
+
+        <!-- Tab Navigation -->
+        <nav class="tab-nav">
+            <button id="tab-btn-plot" class="tab-btn active">プロット</button>
+            <button id="tab-btn-char" class="tab-btn">登場人物</button>
+            <button id="tab-btn-memo" class="tab-btn">メモ</button>
+        </nav>
+
+        <!-- Tab Contents -->
+        <main class="content-area">
+            <!-- Plot Tab -->
+            <section id="tab-plot" class="tab-content active">
+                <div id="plot-work-selector" style="margin-bottom:20px;">
+                    <label style="font-size:0.8rem; color:#888;">作品を選択:</label>
+                    <select id="plot-work-dropdown" class="select-retro"
+                        style="width:100%; font-size:1.1rem; padding:8px; background:#111; color:#fff;">
+                        <option value="">作品を選択してください</option>
+                    </select>
+                </div>
+
+                <div id="plot-list-view">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+                        <h2 class="retro-subtitle">プロット一覧</h2>
+                        <button class="btn-retro save">＋新規プロット</button>
+                    </div>
+                    <div id="plot-list-container">
+                        <!-- Loaded via plot.js -->
+                    </div>
+                </div>
+
+                <!-- Plot Editor (Hidden by default) -->
+                <div id="plot-edit-view" style="display:none;">
+                    <div style="display:flex; gap:10px; margin-bottom:20px;">
+                        <button class="btn-retro back">戻る</button>
+                        <div style="flex:1; display:flex; justify-content:center; gap:10px;">
+                            <button id="plot-type-normal" class="btn-retro active">通常メモ</button>
+                            <button id="plot-type-timeline" class="btn-retro">タイムライン</button>
+                        </div>
+                        <button class="btn-retro save">保存</button>
+                    </div>
+                    <div class="card-retro">
+                        <input type="text" id="plot-title" placeholder="章題・タイトル"
+                            style="width:100%; padding:10px; background:#111; border:1px solid #444; color:#fff; font-size:1.2rem; margin-bottom:12px;">
+
+                        <!-- Timeline Specific (Date/Time) -->
+                        <div id="plot-timeline-meta" style="display:none; margin-bottom:12px; gap:8px;">
+                            <input type="text" id="plot-date" placeholder="日時・時期"
+                                style="flex:1; padding:8px; background:#111; border:1px solid #444; color:#fff;">
+                        </div>
+
+                        <textarea id="plot-content" placeholder="内容"
+                            style="width:100%; height:400px; padding:12px; background:#111; border:1px solid #444; color:#fff; font-size:1.1rem; resize:none;"></textarea>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Character Tab -->
+            <section id="tab-char" class="tab-content">
+                <div id="char-list-view">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+                        <h2 class="retro-subtitle">登場人物一覧</h2>
+                        <button class="btn-retro save">＋新規キャラ</button>
+                    </div>
+                    <div id="char-list-container">
+                        <!-- Loaded via characters.js -->
+                    </div>
+                </div>
+
+                <!-- Character Editor (Hidden by default) -->
+                <div id="char-edit-view" style="display:none;">
+                    <div style="display:flex; gap:10px; margin-bottom:20px;">
+                        <button class="btn-retro back">戻る</button>
+                        <button class="btn-retro save" style="margin-left:auto;">保存</button>
+                    </div>
+
+                    <div class="card-retro">
+                        <!-- Top Section: Icon & Name -->
+                        <div style="display:flex; gap:16px; margin-bottom:20px;">
+                            <div style="text-align:center;">
+                                <div id="char-icon-preview"
+                                    style="width:100px; height:100px; background:#111; border:2px solid #555; display:flex; align-items:center; justify-content:center; overflow:hidden;">
+                                    <span style="color:#444;">No Image</span>
+                                </div>
+                                <button class="btn-retro" style="font-size:0.7rem; padding:4px 8px; margin-top:8px;">画像変更</button>
+                                <input type="file" id="char-icon-input" style="display:none;" accept="image/*">
+                            </div>
+                            <div style="flex:1;">
+                                <label style="font-size:0.7rem; color:var(--clr-save);">名前（ルビ）</label>
+                                <input type="text" id="char-name" placeholder="名前"
+                                    style="width:100%; padding:8px; background:#111; border:1px solid #444; color:#fff; font-size:1.4rem; margin-bottom:8px;">
+                                <input type="text" id="char-ruby" placeholder="ふりがな・ルビ"
+                                    style="width:100%; padding:4px 8px; background:#111; border:1px solid #444; color:#888; font-size:0.9rem; margin-bottom:8px;">
+                                <input type="text" id="char-alias" placeholder="別名・二つ名"
+                                    style="width:100%; padding:4px 8px; background:#111; border:1px solid #444; color:#888; font-size:0.9rem;">
+                            </div>
+                        </div>
+
+                        <!-- Mid Section: Stats -->
+                        <div
+                            style="display:grid; grid-template-columns: repeat(auto-fit, minmax(80px, 1fr)); gap:8px; margin-bottom:20px;">
+                            <div>
+                                <label style="font-size:0.6rem; color:#888;">年齢</label>
+                                <input type="text" id="char-age"
+                                    style="width:100%; padding:6px; background:#111; border:1px solid #444; color:#fff;">
+                            </div>
+                            <div>
+                                <label style="font-size:0.6rem; color:#888;">誕生日</label>
+                                <input type="text" id="char-birth"
+                                    style="width:100%; padding:6px; background:#111; border:1px solid #444; color:#fff;">
+                            </div>
+                            <div>
+                                <label style="font-size:0.6rem; color:#888;">役職</label>
+                                <input type="text" id="char-role"
+                                    style="width:100%; padding:6px; background:#111; border:1px solid #444; color:#fff;">
+                            </div>
+                            <div>
+                                <label style="font-size:0.6rem; color:#888;">身長</label>
+                                <input type="text" id="char-height"
+                                    style="width:100%; padding:6px; background:#111; border:1px solid #444; color:#fff;">
+                            </div>
+                        </div>
+
+                        <!-- Bottom Section: Detailed Memos -->
+                        <div id="char-memos-container">
+                            <div class="char-memo-item" style="margin-bottom:12px;">
+                                <label style="font-size:0.75rem; color:var(--clr-save);">見た目・性格</label>
+                                <textarea id="char-looks"
+                                    style="width:100%; height:80px; padding:8px; background:#111; border:1px solid #444; color:#fff; resize:none;"></textarea>
+                            </div>
+                            <div class="char-memo-item" style="margin-bottom:12px;">
+                                <label style="font-size:0.75rem; color:var(--clr-save);">特技</label>
+                                <textarea id="char-skill"
+                                    style="width:100%; height:60px; padding:8px; background:#111; border:1px solid #444; color:#fff; resize:none;"></textarea>
+                            </div>
+                            <div class="char-memo-item" style="margin-bottom:12px;">
+                                <label style="font-size:0.75rem; color:var(--clr-save);">生い立ち</label>
+                                <textarea id="char-history"
+                                    style="width:100%; height:100px; padding:8px; background:#111; border:1px solid #444; color:#fff; resize:none;"></textarea>
+                            </div>
+                            <div id="char-custom-items">
+                                <!-- Dynamic items -->
+                            </div>
+                            <button class="btn-retro" style="font-size:0.9rem; padding:4px 12px;">＋項目追加</button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Memo Tab -->
+            <section id="tab-memo" class="tab-content">
+                <div id="memo-list-view">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+                        <h2 class="retro-subtitle">共通メモ一覧</h2>
+                        <button class="btn-retro save">＋新規メモ</button>
+                    </div>
+                    <div id="memo-filter-bar" style="margin-bottom:16px;">
+                        <!-- Tag filters will appear here -->
+                    </div>
+                    <div id="memo-list-container">
+                        <!-- Loaded via memo.js -->
+                    </div>
+                </div>
+
+                <!-- Memo Editor/Viewer (Hidden by default) -->
+                <div id="memo-edit-view" style="display:none;">
+                    <div style="display:flex; gap:10px; margin-bottom:20px;">
+                        <button class="btn-retro back">戻る</button>
+                        <button class="btn-retro save" style="margin-left:auto;">保存</button>
+                    </div>
+                    <div class="card-retro">
+                        <input type="text" id="memo-title" placeholder="タイトル"
+                            style="width:100%; padding:10px; background:#111; border:1px solid #444; color:#fff; font-size:1.2rem; margin-bottom:12px;">
+                        <input type="text" id="memo-tags" placeholder="タグ (カンマ区切り)"
+                            style="width:100%; padding:8px; background:#111; border:1px solid #444; color:#fff; margin-bottom:12px;">
+                        <textarea id="memo-content" placeholder="内容"
+                            style="width:100%; height:400px; padding:12px; background:#111; border:1px solid #444; color:#fff; font-size:1.1rem; resize:none;"></textarea>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Modals / Overlays for View/Edit modes will be added later -->
+
+    <!-- Scripts (Modularized) -->
+    <script type="module" src="js/main.js"></script>
+</body>
+
+</html>
