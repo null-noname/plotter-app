@@ -67,9 +67,16 @@ function renderTabs(state) {
 
     // TOPタブの場合はナビゲーションを隠す
     const nav = document.querySelector('.tab-nav');
+    const headerBackBtn = document.getElementById('common-back-to-top');
+
     if (nav) {
-        if (currentTab === 'top') nav.classList.add('hidden');
-        else nav.classList.remove('hidden');
+        if (currentTab === 'top') {
+            nav.classList.add('hidden');
+            if (headerBackBtn) headerBackBtn.style.display = 'none';
+        } else {
+            nav.classList.remove('hidden');
+            if (headerBackBtn) headerBackBtn.style.display = 'block';
+        }
     }
 }
 

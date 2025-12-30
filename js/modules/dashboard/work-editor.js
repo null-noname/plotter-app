@@ -103,8 +103,8 @@ function generateFormHtml(p) {
 
             <div class="form-group mb-20">
                 <div style="display:flex; justify-content:space-between;">
-                    <label class="gold-bold">キャッチコピー</label>
-                    <span id="${p}-f-catch-count" style="font-size:0.75rem; color:#888;">残35字</span>
+                    <label class="gold-bold">キャッチコピー（残35字）</label>
+                    <span id="${p}-f-catch-count" style="font-size:0.75rem; color:#888; display:none;">残35字</span>
                 </div>
                 <input type="text" id="${p}-f-catchphrase" maxlength="35" placeholder="読者を惹きつける一言..." style="width:100%; padding:8px; background:#111; border:1px solid #444; color:#fff;">
             </div>
