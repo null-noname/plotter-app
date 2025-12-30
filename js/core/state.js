@@ -7,6 +7,7 @@
 const state = {
     selectedWorkId: localStorage.getItem('plotter_selectedWorkId'), // localStorageから復元
     currentTab: localStorage.getItem('plotter_currentTab') || 'top',
+    lastActiveTab: localStorage.getItem('plotter_lastActiveTab') || 'plot', // 最後に開いていた作品内タブ
     currentUser: null,
     listeners: []
 };
@@ -20,6 +21,11 @@ export function setState(newState) {
     // タブが変更された場合はlocalStorageに保存
     if (newState.currentTab) {
         localStorage.setItem('plotter_currentTab', newState.currentTab);
+        // TOP以外なら「最後にアクティブだったタブ」として記憶
+        if (newState.currentTab !== 'top') {
+            state.lastActiveTab = newState.currentTab;
+            localStorage.setItem('plotter_lastActiveTab', newState.currentTab);
+        }
     }
     // 作品IDが変更された場合も保存
     if (newState.hasOwnProperty('selectedWorkId')) {

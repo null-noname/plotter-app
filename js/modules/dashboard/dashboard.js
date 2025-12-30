@@ -135,8 +135,9 @@ function createWorkCard(work) {
 
         // 作品を選択状態にする
         setState({ selectedWorkId: work.id });
-        // 最後に開いていたタブがあればそこへ、なければプロットへ
-        const nextTab = work.lastTab || 'plot';
+        // 最後に開いていたタブがあればそこへ、なければグローバルな最後のタブ、それもなければプロットへ
+        const state = getState();
+        const nextTab = work.lastTab || state.lastActiveTab || 'plot';
         setState({ currentTab: nextTab });
     });
 
@@ -146,7 +147,8 @@ function createWorkCard(work) {
         e.stopPropagation();
 
         setState({ selectedWorkId: work.id });
-        const nextTab = work.lastTab || 'plot';
+        const state = getState();
+        const nextTab = work.lastTab || state.lastActiveTab || 'plot';
         setState({ currentTab: nextTab });
     });
 
