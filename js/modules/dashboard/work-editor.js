@@ -13,12 +13,7 @@ let renderedWorkId = null; // タブに現在描画されている作品ID
  * 作品エディタの初期化
  */
 export function initWorkEditor() {
-    const newSaveBtn = document.getElementById('work-new-save');
-    const tabSaveBtn = document.getElementById('work-info-save');
     const newBackBtn = document.getElementById('work-new-back');
-
-    if (newSaveBtn) newSaveBtn.addEventListener('click', () => saveWorkInfo(true));
-    if (tabSaveBtn) tabSaveBtn.addEventListener('click', () => saveWorkInfo(false));
 
     if (newBackBtn) {
         newBackBtn.addEventListener('click', () => {
@@ -52,7 +47,10 @@ export function openNewWorkEditor() {
     currentEditingId = null;
     container.innerHTML = generateFormHtml('new');
 
-    // イベント付与（キャッチカウント）
+    // イベント付与
+    const saveBtn = container.querySelector('#new-save-btn');
+    if (saveBtn) saveBtn.addEventListener('click', () => saveWorkInfo(true));
+
     const catchInput = container.querySelector('#new-f-catchphrase');
     if (catchInput) catchInput.addEventListener('input', (e) => updateCatchCount(e.target, container.querySelector('#new-f-catch-count')));
 
@@ -73,6 +71,10 @@ async function renderWorkInfoTab(workId) {
     currentEditingId = workId;
     renderedWorkId = workId;
     container.innerHTML = generateFormHtml('info');
+
+    // 保存ボタンのイベント
+    const saveBtn = container.querySelector('#info-save-btn');
+    if (saveBtn) saveBtn.addEventListener('click', () => saveWorkInfo(false));
 
     // キャッチカウントのイベント
     const catchInput = container.querySelector('#info-f-catchphrase');
@@ -171,7 +173,7 @@ function generateFormHtml(p) {
                 </div>
             </div>
 
-            <div class="form-group">
+            <div class="form-group" style="margin-bottom:30px;">
                 <label class="gold-bold">AI利用状況</label>
                 <div style="display:flex; flex-wrap:wrap; gap:10px; margin-top:5px;">
                     <label><input type="radio" name="${p}-ai" value="none" checked> なし</label>
@@ -179,6 +181,10 @@ function generateFormHtml(p) {
                     <label><input type="radio" name="${p}-ai" value="partial"> 一部</label>
                     <label><input type="radio" name="${p}-ai" value="main"> 本文</label>
                 </div>
+            </div>
+
+            <div style="text-align:center; padding:20px 0; border-top:1px solid #333;">
+                <button id="${p}-save-btn" class="btn-retro save" style="padding:10px 60px; font-size:1.1rem;">保存</button>
             </div>
         </div>
     `;

@@ -110,6 +110,13 @@ body {
     margin-bottom: 10px;
 }
 
+.gold-bold {
+    font-weight: bold;
+    color: var(--clr-save);
+    margin-bottom: 5px;
+    display: block;
+}
+
 /* --- Buttons --- */
 .btn-retro {
     background: #444;
