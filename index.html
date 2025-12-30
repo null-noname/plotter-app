@@ -45,18 +45,17 @@
             <!-- TOP Tab -->
             <section id="tab-top" class="tab-content active">
                 <div id="work-list-view">
-                    <div
-                        style="display:grid; grid-template-columns: 1fr 1fr 1fr; align-items:center; margin-bottom:20px; border-bottom:1px solid #333; padding-bottom:15px;">
-                        <!-- 1列目: 作品一覧 (左寄せ) -->
+                    <div style="margin-bottom:20px; border-bottom:1px solid #333; padding-bottom:15px;">
+                        <!-- Row 1: 作品一覧 (左寄せ) -->
                         <div style="text-align:left; margin-bottom:10px;">
                             <h2 class="retro-subtitle" style="margin:0; font-size:1.1rem; color:#fff;">作品一覧</h2>
                         </div>
-                        <!-- 2列目: 新規作成 (中央寄せ) -->
+                        <!-- Row 2: ＋新規作成 (中央寄せ) -->
                         <div style="text-align:center; margin-bottom:10px;">
                             <button id="new-work-btn" class="btn-retro save"
                                 style="padding:6px 24px; font-size:1rem;">＋新規作成</button>
                         </div>
-                        <!-- 3列目: ソート (右寄せ) -->
+                        <!-- Row 3: ソート (右寄せ) -->
                         <div style="display:flex; justify-content:flex-end; align-items:center; gap:8px;">
                             <label style="font-size:0.75rem; color:#666;">並び替え:</label>
                             <select id="work-sort-order" class="select-retro"
