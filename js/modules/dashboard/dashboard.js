@@ -70,16 +70,19 @@ function renderWorkCards(works, container) {
     }
 
     // クライアント側でソート (インデックス不要)
-    const sort = document.getElementById('work-sort-order')?.value || 'updatedAt';
+    const sortVal = document.getElementById('work-sort-order')?.value || 'updatedAt_desc';
+    const [field, order] = sortVal.split('_');
+
     const sorted = [...works].sort((a, b) => {
         // お気に入り（ピン）を最優先
         if (a.pinned && !b.pinned) return -1;
         if (!a.pinned && b.pinned) return 1;
 
         // 次にユーザー選択のソート順
-        const valA = a[sort]?.seconds || 0;
-        const valB = b[sort]?.seconds || 0;
-        return valB - valA;
+        const valA = a[field]?.seconds || 0;
+        const valB = b[field]?.seconds || 0;
+
+        return order === 'desc' ? valB - valA : valA - valB;
     });
 
     sorted.forEach(work => {
@@ -105,10 +108,9 @@ function createWorkCard(work) {
             <button class="star-btn ${work.pinned ? 'active' : ''}" title="お気に入り">${work.pinned ? '★' : '☆'}</button>
         </div>
         <div style="margin:5px 0;">${tagsHtml}</div>
-        <p style="font-size:0.9rem; color:#aaa; flex:1; margin:5px 0;">${escapeHtml(work.catchphrase || "")}</p>
-        <div class="work-meta" style="display:flex; flex-direction:column; gap:2px; font-size:0.75rem;">
-            <span>作成: ${formatDate(work.createdAt)}</span>
-            <span>更新: ${formatDate(work.updatedAt, true)}</span>
+        <div class="work-meta" style="display:flex; flex-direction:column; gap:2px; font-size:0.75rem; margin-top:auto;">
+            <span>作成日: ${formatDate(work.createdAt)}</span>
+            <span>更新日: ${formatDate(work.updatedAt, true)}</span>
         </div>
     `;
 
