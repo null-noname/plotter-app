@@ -18,7 +18,7 @@ export function initPlotEditor() {
     window.plotter_movePlot = movePlot;
 
     // イベントリスナーの登録
-    const saveBtn = document.querySelector('#plot-edit-view .btn-retro.save');
+    const saveBtn = document.getElementById('plot-save-btn');
     if (saveBtn) saveBtn.addEventListener('click', savePlot);
 
     const backBtn = document.querySelector('#plot-edit-view .btn-retro.back');
