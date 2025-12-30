@@ -43,7 +43,6 @@ export async function openPlotEditor(id = null) {
 
     currentPlotId = id;
     document.getElementById('plot-list-view').style.display = 'none';
-    document.getElementById('plot-work-selector').style.display = 'none';
     document.getElementById('plot-edit-view').style.display = 'block';
 
     const titleInput = document.getElementById('plot-title');
@@ -89,8 +88,13 @@ export async function savePlot() {
     const content = document.getElementById('plot-content').value;
     const date = document.getElementById('plot-date').value;
 
+    if (!title) {
+        alert('タイトルを入力してください。');
+        return;
+    }
+
     const data = {
-        title: title || "無題",
+        title: title,
         content: content,
         type: currentPlotType,
         date: currentPlotType === 'timeline' ? date : "",
@@ -103,13 +107,13 @@ export async function savePlot() {
     try {
         if (currentPlotId) {
             await ref.doc(currentPlotId).update(data);
+            alert('保存しました。');
         } else {
-            // 新規作成時のオーダー設定（簡易的に現在の数、または最大値+1にすべき）
-            // 旧コードのロジックを踏襲
             const snap = await ref.get();
             data.order = snap.size;
             data.createdAt = firebase.firestore.FieldValue.serverTimestamp();
             await ref.add(data);
+            alert('作成しました！');
         }
         closePlotEditor();
     } catch (error) {
@@ -123,7 +127,6 @@ export async function savePlot() {
  */
 export function closePlotEditor() {
     document.getElementById('plot-list-view').style.display = 'block';
-    document.getElementById('plot-work-selector').style.display = 'block';
     document.getElementById('plot-edit-view').style.display = 'none';
 }
 

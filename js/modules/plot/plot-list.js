@@ -1,10 +1,4 @@
-/**
- * plot-list.js - プロット一覧表示の管理
- */
-
-import { getDb } from '../../core/firebase.js';
-import { getState, setState, subscribe } from '../../core/state.js';
-import { escapeHtml, clearContainer } from '../../utils/dom-utils.js';
+import { openPlotEditor } from './plot-editor.js';
 
 let unsubscribePlots = null;
 
@@ -12,6 +6,10 @@ let unsubscribePlots = null;
  * プロット一覧の初期化
  */
 export function initPlotList() {
+    // 新規作成ボタン
+    const newBtn = document.getElementById('plot-new-btn');
+    if (newBtn) newBtn.addEventListener('click', () => openPlotEditor());
+
     // 状態を監視して、作品選択やタブが変わったら再描画
     subscribe((state) => {
         if (state.currentTab === 'plot') {
@@ -93,10 +91,9 @@ function createPlotCard(plot) {
         </div>
     `;
 
-    // イベントの紐付け (onclickを排除)
+    // イベントの紐付け
     card.querySelector('.plot-click-area').addEventListener('click', () => {
-        // TODO: plot-editorを開く処理を呼び出す
-        if (window.plotter_openPlotEditor) window.plotter_openPlotEditor(plot.id);
+        openPlotEditor(plot.id);
     });
 
     card.querySelector('.btn-up').addEventListener('click', () => {
