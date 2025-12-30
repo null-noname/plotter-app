@@ -44,7 +44,17 @@
         <main class="content-area">
             <!-- TOP Tab -->
             <section id="tab-top" class="tab-content active">
-                <h2 class="retro-subtitle">作品一覧</h2>
+                <div style="display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:10px;">
+                    <h2 class="retro-subtitle" style="margin-bottom:0;">作品一覧</h2>
+                    <div style="display:flex; align-items:center; gap:10px;">
+                        <label style="font-size:0.75rem; color:#888;">並び替え:</label>
+                        <select id="work-sort-order" class="select-retro"
+                            style="font-size:0.85rem; padding:4px 8px; background:#111; color:#fff;">
+                            <option value="updatedAt">更新順</option>
+                            <option value="createdAt">作成日</option>
+                        </select>
+                    </div>
+                </div>
                 <div id="work-grid-container" class="work-grid">
                     <!-- Loaded via dashboard.js -->
                     <div style="text-align:center; padding:40px; color:#666;">読み込み中...</div>

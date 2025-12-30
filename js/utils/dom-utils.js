@@ -29,6 +29,24 @@ export function toggleVisible(selector, isVisible) {
 }
 
 /**
+ * 日付を YYYY/MM/DD (HH:mm) 形式にフォーマットします。
+ */
+export function formatDate(timestamp, showTime = false) {
+    if (!timestamp) return '---';
+    const date = timestamp.toDate ? timestamp.toDate() : new Date(timestamp);
+
+    const y = date.getFullYear();
+    const m = String(date.getMonth() + 1).padStart(2, '0');
+    const d = String(date.getDate()).padStart(2, '0');
+
+    if (!showTime) return `${y}/${m}/${d}`;
+
+    const hh = String(date.getHours()).padStart(2, '0');
+    const mm = String(date.getMinutes()).padStart(2, '0');
+    return `${y}/${m}/${d} ${hh}:${mm}`;
+}
+
+/**
  * 指定した要素のすべての子要素を削除します。
  */
 export function clearContainer(container) {

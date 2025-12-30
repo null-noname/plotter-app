@@ -44,15 +44,16 @@ function renderTabs(state) {
     tabs.forEach(tab => {
         const btn = document.getElementById(`tab-btn-${tab}`);
         const content = document.getElementById(`tab-${tab}`);
-
-        if (state.currentTab === tab) {
-            if (btn) btn.classList.add('active');
-            if (content) content.classList.add('active');
-        } else {
-            if (btn) btn.classList.remove('active');
-            if (content) content.classList.remove('active');
-        }
+        if (btn) btn.classList.toggle('active', state.currentTab === tab);
+        if (content) content.classList.toggle('active', state.currentTab === tab);
     });
+
+    // TOPタブの場合はナビゲーションを隠す
+    const nav = document.querySelector('.tab-nav');
+    if (nav) {
+        if (state.currentTab === 'top') nav.classList.add('hidden');
+        else nav.classList.remove('hidden');
+    }
 }
 
 /**

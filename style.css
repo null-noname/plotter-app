@@ -237,6 +237,50 @@ select {
     display: none;
 }
 
+.hidden {
+    display: none !important;
+}
+
+/* Work Grid & Tags */
+.work-tag {
+    display: inline-block;
+    padding: 2px 8px;
+    border: 1px solid currentColor;
+    font-size: 0.75rem;
+    margin-right: 5px;
+    border-radius: 4px;
+    background: transparent;
+    font-weight: bold;
+}
+
+.tag-long {
+    color: #ff8c00;
+}
+
+.tag-short {
+    color: #87ceeb;
+}
+
+/* Favorite/Star Button */
+.star-btn {
+    background: transparent;
+    border: none;
+    color: #555;
+    font-size: 1.5rem;
+    cursor: pointer;
+    line-height: 1;
+    transition: color 0.1s, transform 0.1s;
+}
+
+.star-btn.active {
+    color: #ffd700;
+    /* Gold */
+}
+
+.star-btn:hover {
+    transform: scale(1.1);
+}
+
 /* Mobile adjustments */
 @media (max-width: 600px) {
     .tab-btn {
