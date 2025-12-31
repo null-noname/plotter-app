@@ -77,7 +77,7 @@ function renderWorkCards(works, container) {
     clearContainer(container);
 
     if (!works || works.length === 0) {
-        container.innerHTML = '<div style="text-align:center; padding:40px; color:#666;">作品が登録されていません。<br>エディター側で作品を作成してください。</div>';
+        container.innerHTML = '<div style="text-align:center; padding:60px; color:#444; font-size:0.9rem;">作品がありません</div>';
         return;
     }
 
