@@ -4,6 +4,7 @@
 
 import { getDb, getStorage, getAuth } from '../../core/firebase.js';
 import { getState } from '../../core/state.js';
+import { escapeHtml } from '../../utils/dom-utils.js';
 
 let currentCharId = null;
 let pendingIconFile = null;
@@ -198,7 +199,7 @@ export function addCharCustomItem(label = "", value = "") {
     div.className = 'char-memo-item';
     div.style.marginBottom = '12px';
     div.innerHTML = `
-        <input type="text" class="custom-label" value="${label}" placeholder="項目名" style="width:100%; font-size:0.75rem; color:var(--clr-save); background:transparent; border:none; border-bottom:1px solid #333; margin-bottom:4px;">
+        <input type="text" class="custom-label gold-bold" value="${label}" placeholder="項目名" style="width:100%; font-size:0.75rem; color:#fff; background:transparent; border:none; border-bottom:1px solid #333; margin-bottom:4px; font-weight:bold;">
         <textarea class="custom-value" style="width:100%; height:60px; padding:8px; background:#111; border:1px solid #444; color:#fff; resize:none;">${value}</textarea>
     `;
     container.appendChild(div);
@@ -264,9 +265,10 @@ export async function saveCharacter() {
             const snap = await ref.get();
             data.order = snap.size;
             data.createdAt = fb.firestore.FieldValue.serverTimestamp();
-            await ref.add(data);
+            const newDoc = await ref.add(data);
+            currentCharId = newDoc.id;
         }
-        closeCharEditor();
+        openCharView(currentCharId);
     } catch (error) {
         console.error('[CharEditor] 保存エラー:', error);
         alert('保存に失敗しました。詳細はコンソールを確認してください。');

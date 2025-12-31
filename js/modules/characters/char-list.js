@@ -97,7 +97,7 @@ function createCharCard(char) {
             ${char.iconUrl ? `<img src="${char.iconUrl}" style="width:100%; height:100%; object-fit:cover;">` : '<span style="font-size:0.6rem; color:#444;">No thumb</span>'}
         </div>
         <div class="char-click-area" style="flex:1; cursor:pointer;">
-            <div style="font-size:0.75rem; color:#888;">${escapeHtml(fullRuby)}</div>
+            <div style="font-size:0.75rem; color:rgba(255,255,255,0.7);">${escapeHtml(fullRuby)}</div>
             <h3 style="font-size:1.1rem; color:#fff;">${escapeHtml(fullName)}</h3>
         </div>
         <div style="display:flex; gap:6px;">
