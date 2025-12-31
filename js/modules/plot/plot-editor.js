@@ -15,19 +15,16 @@ let timelineItems = []; // { date: "", content: "" } の配列
 export function initPlotEditor() {
     // グローバルブリッジの登録 (モジュール移行期の一時的措置)
     window.plotter_openPlotEditor = openPlotEditor;
+    window.plotter_openPlotView = openPlotView;
     window.plotter_deletePlot = deletePlot;
     window.plotter_movePlot = movePlot;
 
-    // イベントリスナーの登録
+    // 編集画面：イベントリスナーの登録
     const saveBtn = document.getElementById('plot-save-btn');
     if (saveBtn) saveBtn.addEventListener('click', savePlot);
 
     const backBtn = document.getElementById('plot-edit-back');
-    if (backBtn) {
-        backBtn.addEventListener('click', closePlotEditor);
-    } else {
-        console.error('[PlotEditor] 戻るボタンが見つかりません (#plot-edit-back)');
-    }
+    if (backBtn) backBtn.addEventListener('click', closePlotEditor);
 
     const typeNormalBtn = document.getElementById('plot-type-normal');
     if (typeNormalBtn) typeNormalBtn.addEventListener('click', () => setPlotType('normal'));
@@ -35,9 +32,57 @@ export function initPlotEditor() {
     const typeTimelineBtn = document.getElementById('plot-type-timeline');
     if (typeTimelineBtn) typeTimelineBtn.addEventListener('click', () => setPlotType('timeline'));
 
-    // タイムライン追加ボタン
     const addEntryBtn = document.getElementById('plot-timeline-add-btn');
     if (addEntryBtn) addEntryBtn.addEventListener('click', () => addTimelineEntry());
+
+    // 閲覧画面：イベントリスナーの登録
+    const viewBackBtn = document.getElementById('plot-view-back');
+    if (viewBackBtn) viewBackBtn.addEventListener('click', closePlotEditor);
+
+    const viewEditBtn = document.getElementById('plot-view-edit-btn');
+    if (viewEditBtn) viewEditBtn.addEventListener('click', () => openPlotEditor(currentPlotId));
+}
+
+/**
+ * 閲覧モードを開く
+ */
+export async function openPlotView(id) {
+    const state = getState();
+    if (!state.selectedWorkId) return;
+
+    currentPlotId = id;
+    const db = getDb();
+    const doc = await db.collection("works").doc(state.selectedWorkId)
+        .collection("plots").doc(id).get();
+
+    if (!doc.exists) return;
+    const data = doc.data();
+
+    // 表示切り替え
+    document.getElementById('plot-list-view').style.display = 'none';
+    document.getElementById('plot-edit-view').style.display = 'none';
+    document.getElementById('plot-view-view').style.display = 'block';
+
+    document.getElementById('plot-view-title').textContent = data.title || "無題";
+
+    const basicView = document.getElementById('plot-view-basic-content');
+    const timelineView = document.getElementById('plot-view-timeline-content');
+    const timelineList = document.getElementById('plot-view-timeline-list');
+
+    if (data.type === 'timeline') {
+        basicView.style.display = 'none';
+        timelineView.style.display = 'block';
+        timelineList.innerHTML = (data.timelineItems || []).map(item => `
+            <div style="display:flex; gap:12px; margin-bottom:15px; border-bottom:1px solid #333; padding-bottom:10px;">
+                <div style="color:var(--clr-save); font-size:0.9rem; min-width:60px; font-weight:bold;">${item.date || "-"}</div>
+                <div style="flex:1; color:#ddd; white-space:pre-wrap;">${item.content || ""}</div>
+            </div>
+        `).join('');
+    } else {
+        basicView.style.display = 'block';
+        timelineView.style.display = 'none';
+        basicView.textContent = data.content || "";
+    }
 }
 
 /**
@@ -53,6 +98,7 @@ export async function openPlotEditor(id = null) {
     currentPlotId = id;
     timelineItems = [];
     document.getElementById('plot-list-view').style.display = 'none';
+    document.getElementById('plot-view-view').style.display = 'none';
     document.getElementById('plot-edit-view').style.display = 'block';
 
     const titleInput = document.getElementById('plot-title');
@@ -123,10 +169,10 @@ function renderTimelineEntries() {
         row.style.alignItems = 'flex-start';
 
         row.innerHTML = `
-            <input type="text" class="tl-date" placeholder="時" value="${item.date}"
-                style="width:50px; padding:6px; background:#0a0a0a; border:1px solid #333; color:var(--clr-save); font-size:0.85rem; align-self: stretch;">
+            <input type="text" class="tl-date" placeholder="日時" value="${item.date}"
+                style="width:60px; padding:6px; background:#0a0a0a; border:1px solid #333; color:var(--clr-save); font-size:0.85rem; align-self: stretch;">
             <textarea class="tl-content" placeholder="内容"
-                style="flex: 1; height:40px; padding:8px; background:#111; border:1px solid #444; color:#fff; font-size:0.95rem; resize:vertical;">${item.content}</textarea>
+                style="flex: 1; height:40px; padding:8px; background:#111; border:1px solid #444; color:#fff; font-size:0.95rem; resize:none; overflow-y:hidden;">${item.content}</textarea>
             <div style="display:flex; gap:4px; align-items: center;">
                 <button class="btn-sort tl-up" style="${index === 0 ? 'opacity:0.3; cursor:default;' : ''} padding: 4px 8px;">▲</button>
                 <button class="btn-icon tl-del" style="background:transparent; color:var(--clr-delete); font-size:1.5rem; padding: 0 4px; line-height: 1;">×</button>
@@ -137,8 +183,19 @@ function renderTimelineEntries() {
         const dateInput = row.querySelector('.tl-date');
         const contentInput = row.querySelector('.tl-content');
 
+        const autoResize = (el) => {
+            el.style.height = '40px';
+            el.style.height = (el.scrollHeight) + 'px';
+        };
+
         dateInput.addEventListener('input', (e) => { timelineItems[index].date = e.target.value; });
-        contentInput.addEventListener('input', (e) => { timelineItems[index].content = e.target.value; });
+        contentInput.addEventListener('input', (e) => {
+            timelineItems[index].content = e.target.value;
+            autoResize(e.target);
+        });
+
+        // 初期化時のリサイズ
+        setTimeout(() => autoResize(contentInput), 0);
 
         row.querySelector('.tl-up').addEventListener('click', () => {
             if (index > 0) {
@@ -206,6 +263,7 @@ export async function savePlot() {
 export function closePlotEditor() {
     document.getElementById('plot-list-view').style.display = 'block';
     document.getElementById('plot-edit-view').style.display = 'none';
+    document.getElementById('plot-view-view').style.display = 'none';
 }
 
 /**

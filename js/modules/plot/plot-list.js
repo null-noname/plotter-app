@@ -5,7 +5,7 @@
 import { getDb } from '../../core/firebase.js';
 import { subscribe } from '../../core/state.js';
 import { escapeHtml, clearContainer } from '../../utils/dom-utils.js';
-import { openPlotEditor } from './plot-editor.js';
+import { openPlotEditor, openPlotView } from './plot-editor.js';
 
 let unsubscribePlots = null;
 
@@ -100,7 +100,7 @@ function createPlotCard(plot) {
 
     // イベントの紐付け
     card.querySelector('.plot-click-area').addEventListener('click', () => {
-        openPlotEditor(plot.id);
+        openPlotView(plot.id);
     });
 
     card.querySelector('.btn-up').addEventListener('click', () => {
