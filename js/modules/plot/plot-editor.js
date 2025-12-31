@@ -102,9 +102,9 @@ export async function openPlotEditor(id = null) {
     document.getElementById('plot-edit-view').style.display = 'block';
 
     // 既存プロット編集時はタイプ変更不可
-    const typeSelectorRow = document.querySelector('#plot-edit-view .btn-group')?.parentElement;
-    if (typeSelectorRow) {
-        typeSelectorRow.style.display = id ? 'none' : 'flex';
+    const typeSelector = document.getElementById('plot-type-selector');
+    if (typeSelector) {
+        typeSelector.style.display = id ? 'none' : 'flex';
     }
 
     const titleInput = document.getElementById('plot-title');
