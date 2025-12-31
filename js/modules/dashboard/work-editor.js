@@ -14,13 +14,25 @@ let renderedWorkId = null; // タブに現在描画されている作品ID
  */
 export function initWorkEditor() {
     const newBackBtn = document.getElementById('work-new-back');
-
     if (newBackBtn) {
         newBackBtn.addEventListener('click', () => {
             document.getElementById('work-new-view').style.display = 'none';
             document.getElementById('work-list-view').style.display = 'block';
         });
     }
+
+    // 編集・キャンセルボタンのイベント (作品情報タブ用)
+    const editBtn = document.getElementById('work-view-edit-btn');
+    if (editBtn) editBtn.addEventListener('click', () => {
+        document.getElementById('work-view-view').style.display = 'none';
+        document.getElementById('work-edit-view').style.display = 'block';
+    });
+
+    const backBtn = document.getElementById('work-edit-back');
+    if (backBtn) backBtn.addEventListener('click', () => {
+        document.getElementById('work-view-view').style.display = 'block';
+        document.getElementById('work-edit-view').style.display = 'none';
+    });
 
     // 状態監視：作品情報タブが開かれたらフォームを描画
     subscribe((state) => {
@@ -65,26 +77,28 @@ export function openNewWorkEditor() {
  * 作品情報タブの内容を描画
  */
 async function renderWorkInfoTab(workId) {
-    const container = document.getElementById('work-form-container-info');
-    if (!container) return;
+    const container = document.getElementById('work-view-container');
+    const formContainer = document.getElementById('work-form-container-info');
+    if (!container || !formContainer) return;
 
     currentEditingId = workId;
     renderedWorkId = workId;
-    container.innerHTML = generateFormHtml('info');
 
-    // 保存ボタンのイベント
-    const saveBtn = container.querySelector('#info-save-btn');
+    // 初期状態：閲覧モードを表示
+    document.getElementById('work-view-view').style.display = 'block';
+    document.getElementById('work-edit-view').style.display = 'none';
+
+    // フォームも裏で生成しておく
+    formContainer.innerHTML = generateFormHtml('info');
+    const saveBtn = formContainer.querySelector('#info-save-btn');
     if (saveBtn) saveBtn.addEventListener('click', () => saveWorkInfo(false));
 
-    // キャッチカウントのイベント
-    const catchInput = container.querySelector('#info-f-catchphrase');
-    if (catchInput) catchInput.addEventListener('input', (e) => updateCatchCount(e.target, container.querySelector('#info-f-catch-count')));
+    const catchInput = formContainer.querySelector('#info-f-catchphrase');
+    if (catchInput) catchInput.addEventListener('input', (e) => updateCatchCount(e.target, formContainer.querySelector('#info-f-catch-count')));
 
     // 認証待ち
     const auth = getAuth();
     if (!auth.currentUser) {
-        console.log('[WorkEditor] 認証待ち...');
-        // 認証が完了するまで少し待機（または再試行）
         let retryCount = 0;
         while (!auth.currentUser && retryCount < 10) {
             await new Promise(resolve => setTimeout(resolve, 500));
@@ -93,8 +107,7 @@ async function renderWorkInfoTab(workId) {
     }
 
     if (!auth.currentUser) {
-        console.error('[WorkEditor] 認証が完了しなかったため、読み込みを中止します。');
-        container.innerHTML = '<div style="text-align:center; padding:40px; color:var(--clr-delete);">認証エラーが発生しました。再ログインしてください。</div>';
+        container.innerHTML = '<div style="text-align:center; padding:40px; color:var(--clr-delete);">認証エラーが発生しました。</div>';
         return;
     }
 
@@ -103,7 +116,9 @@ async function renderWorkInfoTab(workId) {
     try {
         const doc = await db.collection("works").doc(workId).get();
         if (doc.exists) {
-            populateForm(container, 'info', doc.data());
+            const data = doc.data();
+            renderWorkView(container, data);
+            populateForm(formContainer, 'info', data);
         } else {
             container.innerHTML = '<div style="text-align:center; padding:40px; color:#666;">作品が見つかりませんでした。</div>';
         }
@@ -111,6 +126,52 @@ async function renderWorkInfoTab(workId) {
         console.error('[WorkEditor] 読み込み失敗:', error);
         container.innerHTML = '<div style="text-align:center; padding:40px; color:var(--clr-delete);">データの読み込みに失敗しました。</div>';
     }
+}
+
+/**
+ * 閲覧モードの描画
+ */
+function renderWorkView(container, data) {
+    const ratings = {
+        sexual: "性描写",
+        violent: "暴力",
+        cruel: "残酷"
+    };
+    const activeRatings = (data.rating || []).map(r => ratings[r] || r).join(' / ');
+
+    const statusLabels = {
+        "in-progress": "制作中",
+        "completed": "完了",
+        "suspended": "中断"
+    };
+    const statusLabel = statusLabels[data.status] || "未設定";
+
+    const aiLabels = {
+        "none": "なし",
+        "assist": "補助",
+        "partial": "一部",
+        "main": "本文"
+    };
+
+    container.innerHTML = `
+        <div class="card-retro">
+            <h3 style="color:#fff; font-size:1.6rem; margin-bottom:10px;">${escapeHtml(data.title || "無題")}</h3>
+            ${data.catchphrase ? `<div style="color:var(--clr-save); font-weight:bold; margin-bottom:15px; font-size:1rem;">${escapeHtml(data.catchphrase)}</div>` : ''}
+            
+            <div style="margin-bottom:20px; color:#ddd; white-space:pre-wrap; line-height:1.7; font-size:1.1rem; padding:15px; background:rgba(255,255,255,0.03); border-radius:4px;">${escapeHtml(data.description || "あらすじ未入力")}</div>
+
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:15px; font-size:0.9rem; color:#aaa;">
+                <div><span class="gold-bold">状態:</span> <span style="color:#fff;">${statusLabel}</span></div>
+                <div><span class="gold-bold">種別:</span> <span style="color:#fff;">${data.type === 'derivative' ? '二次創作' : 'オリジナル'}</span></div>
+                <div><span class="gold-bold">長さ:</span> <span style="color:#fff;">${data.length === 'short' ? '短編' : '長編'}</span></div>
+                <div><span class="gold-bold">AI利用:</span> <span style="color:#fff;">${aiLabels[data.ai] || "なし"}</span></div>
+            </div>
+            ${activeRatings ? `
+            <div style="margin-top:15px; font-size:0.9rem;">
+                <span class="gold-bold">レーティング:</span> <span style="color:var(--clr-delete);">${activeRatings}</span>
+            </div>` : ''}
+        </div>
+    `;
 }
 
 /**
@@ -244,7 +305,6 @@ async function saveWorkInfo(isNew) {
 
     const title = container.querySelector(`#${p}-f-title`).value.trim();
     if (!title) {
-        alert('タイトルを入力してください。');
         return;
     }
 
@@ -268,7 +328,8 @@ async function saveWorkInfo(isNew) {
         if (!isNew && currentEditingId) {
             // 更新
             await db.collection("works").doc(currentEditingId).update(data);
-            alert('保存しました。');
+            // 保存成功通知を削除し、閲覧モードに戻る
+            renderWorkInfoTab(currentEditingId);
         } else {
             // 新規作成
             data.uid = auth.currentUser.uid;
@@ -276,7 +337,7 @@ async function saveWorkInfo(isNew) {
             data.pinned = false;
 
             const docRef = await db.collection("works").add(data);
-            alert('作品を作成しました！');
+            // 保存成功通知を削除
 
             // リスト表示に戻し、プロットへ移動
             document.getElementById('work-new-view').style.display = 'none';
@@ -289,7 +350,6 @@ async function saveWorkInfo(isNew) {
         }
     } catch (error) {
         console.error('[WorkEditor] 保存失敗:', error);
-        alert('保存に失敗しました。');
     }
 }
 

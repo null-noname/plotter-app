@@ -96,12 +96,29 @@
 
             <!-- Work Info Tab -->
             <section id="tab-work-info" class="tab-content">
-                <div
-                    style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; border-bottom:1px solid #333; padding-bottom:10px;">
-                    <h2 class="retro-subtitle" style="margin:0;">作品情報</h2>
+                <!-- View Mode -->
+                <div id="work-view-view">
+                    <div
+                        style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; border-bottom:1px solid #333; padding-bottom:10px;">
+                        <h2 class="retro-subtitle" style="margin:0;">作品情報</h2>
+                        <button id="work-view-edit-btn" class="btn-retro save"
+                            style="padding:4px 16px; font-size:0.8rem;">編集</button>
+                    </div>
+                    <div id="work-view-container">
+                        <div style="text-align:center; padding:40px; color:#666;">作品情報を読み込み中...</div>
+                    </div>
                 </div>
-                <div id="work-form-container-info">
-                    <div style="text-align:center; padding:40px; color:#666;">作品情報を読み込み中...</div>
+
+                <!-- Edit Mode (Hidden by default) -->
+                <div id="work-edit-view" style="display:none;">
+                    <div
+                        style="display:flex; gap:10px; margin-bottom:20px; align-items:center; border-bottom:1px solid #333; padding-bottom:10px;">
+                        <button id="work-edit-back" class="btn-retro back"
+                            style="padding:4px 12px; font-size:0.8rem;">キャンセル</button>
+                        <h2 class="retro-subtitle" style="margin:0; flex:1; text-align:center;">作品情報の編集</h2>
+                        <div style="width:60px;"></div> <!-- Spacer -->
+                    </div>
+                    <div id="work-form-container-info"></div>
                 </div>
             </section>
 

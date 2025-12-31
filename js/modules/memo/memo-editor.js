@@ -97,7 +97,6 @@ export async function saveMemo() {
         closeMemoEditor();
     } catch (error) {
         console.error('[MemoEditor] 保存エラー:', error);
-        alert('保存に失敗しました。');
     }
 }
 
@@ -105,7 +104,7 @@ export async function saveMemo() {
  * 削除処理
  */
 export async function deleteMemo(id) {
-    if (!confirm("このメモを削除しますか？")) return;
+    if (!confirm("本当に削除しますか？")) return;
 
     const state = getState();
     const db = getDb();

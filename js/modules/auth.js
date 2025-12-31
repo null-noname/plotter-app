@@ -49,7 +49,6 @@ export async function handleLogin() {
         await auth.signInWithPopup(provider);
     } catch (error) {
         console.error('[Auth] ログインエラー:', error);
-        alert('ログインに失敗しました。');
     }
 }
 

@@ -122,7 +122,6 @@ export async function openCharView(id) {
 export async function openCharEditor(id = null) {
     const state = getState();
     if (!state.selectedWorkId) {
-        alert("作品を選択してください");
         return;
     }
 
@@ -220,7 +219,7 @@ export function addCharCustomItem(label = "", value = "") {
 
     // 削除ボタンのイベント
     div.querySelector('.btn-delete-item').addEventListener('click', () => {
-        if (confirm("この項目を削除しますか？")) {
+        if (confirm("本当に削除しますか？")) {
             div.remove();
         }
     });
@@ -251,8 +250,7 @@ export async function saveCharacter() {
                 console.log('[CharEditor] 画像変換完了 (Base64形式)');
             } catch (err) {
                 console.error('[CharEditor] 画像変換失敗:', err);
-                const msg = "画像の変換に失敗しました。画像なしでテキスト情報のみ保存しますか？";
-                if (!confirm(msg)) return;
+                // ポップアップは削除のみにするため、通知せず続行（画像は保存されない）
             }
         }
 
@@ -313,7 +311,6 @@ export async function saveCharacter() {
         openCharView(currentCharId);
     } catch (error) {
         console.error('[CharEditor] 保存エラー:', error);
-        alert('保存に失敗しました。エラー内容はコンソールを確認してください。');
     }
 }
 
@@ -327,7 +324,7 @@ export function closeCharEditor() {
  * 削除処理
  */
 export async function deleteChar(id) {
-    if (!confirm("このキャラクターを削除しますか？")) return;
+    if (!confirm("本当に削除しますか？")) return;
 
     const state = getState();
     const db = getDb();

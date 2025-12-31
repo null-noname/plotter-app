@@ -91,7 +91,6 @@ export async function openPlotView(id) {
 export async function openPlotEditor(id = null) {
     const state = getState();
     if (!state.selectedWorkId) {
-        alert("作品を選択してください");
         return;
     }
 
@@ -213,8 +212,10 @@ function renderTimelineEntries() {
         });
 
         row.querySelector('.tl-del').addEventListener('click', () => {
-            timelineItems.splice(index, 1);
-            renderTimelineEntries();
+            if (confirm("本当に削除しますか？")) {
+                timelineItems.splice(index, 1);
+                renderTimelineEntries();
+            }
         });
 
         list.appendChild(row);
@@ -230,7 +231,6 @@ export async function savePlot() {
     const content = document.getElementById('plot-content').value;
 
     if (!title) {
-        alert('タイトルを入力してください。');
         return;
     }
 
@@ -249,18 +249,15 @@ export async function savePlot() {
 
         if (currentPlotId) {
             await ref.doc(currentPlotId).update(data);
-            alert('保存しました。');
         } else {
             const snap = await ref.get();
             data.order = snap.size;
             data.createdAt = fb.firestore.FieldValue.serverTimestamp();
             await ref.add(data);
-            alert('作成しました！');
         }
         closePlotEditor();
     } catch (error) {
         console.error('[PlotEditor] 保存エラー:', error);
-        alert('保存に失敗しました。詳細はコンソールを確認してください。');
     }
 }
 
@@ -277,7 +274,7 @@ export function closePlotEditor() {
  * 削除処理
  */
 export async function deletePlot(id) {
-    if (!confirm("このプロットを削除しますか？")) return;
+    if (!confirm("本当に削除しますか？")) return;
 
     const state = getState();
     const db = getDb();
