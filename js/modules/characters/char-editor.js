@@ -8,6 +8,7 @@ import { escapeHtml } from '../../utils/dom-utils.js';
 
 let currentCharId = null;
 let pendingIconFile = null;
+let currentIconUrl = null;
 
 /**
  * 登場人物エディタの初期化
@@ -71,6 +72,7 @@ export async function openCharView(id) {
 
     if (!doc.exists) return;
     const data = doc.data();
+    currentIconUrl = data.iconUrl;
 
     // データの流し込み
     const iconContainer = document.getElementById('char-view-icon');
@@ -139,8 +141,13 @@ export async function openCharEditor(id = null) {
 
         if (doc.exists) {
             const data = doc.data();
+            currentIconUrl = data.iconUrl;
             fillFields(data);
+        } else {
+            currentIconUrl = null;
         }
+    } else {
+        currentIconUrl = null;
     }
 }
 
@@ -233,18 +240,15 @@ export async function saveCharacter() {
     }
 
     try {
-        let iconUrl = null;
+        let iconUrl = currentIconUrl;
         if (pendingIconFile) {
+            console.log('[CharEditor] 画像アップロード開始:', pendingIconFile.name);
             const storage = getStorage();
             const path = `characters/${state.currentUser.uid}/${Date.now()}_${pendingIconFile.name}`;
             const ref = storage.ref().child(path);
             await ref.put(pendingIconFile);
             iconUrl = await ref.getDownloadURL();
-        } else if (currentCharId) {
-            const db = getDb();
-            const doc = await db.collection("works").doc(state.selectedWorkId)
-                .collection("characters").doc(currentCharId).get();
-            if (doc.exists) iconUrl = doc.data().iconUrl;
+            console.log('[CharEditor] 画像アップロード完了:', iconUrl);
         }
 
         const customItems = [];
@@ -285,7 +289,7 @@ export async function saveCharacter() {
             updatedAt: fb.firestore.FieldValue.serverTimestamp()
         };
 
-        console.log('[CharEditor] 保存データ:', data);
+        console.log('[CharEditor] 保存データ詳細:', JSON.parse(JSON.stringify(data)));
 
         const db = getDb();
         const ref = db.collection("works").doc(state.selectedWorkId).collection("characters");
