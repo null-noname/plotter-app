@@ -165,10 +165,10 @@ body {
     background: transparent;
 }
 
-/* Sort Arrows: Light Gray background, Black text */
+/* Sort Arrows: Light Gray background, Black text, No border */
 .btn-sort {
     background: var(--clr-back);
-    border: 1px solid #000;
+    border: none;
     padding: 6px 10px;
     cursor: pointer;
     font-size: 1.1rem;
