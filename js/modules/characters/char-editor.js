@@ -69,24 +69,24 @@ export async function openCharView(id) {
     const iconContainer = document.getElementById('char-view-icon');
     iconContainer.innerHTML = data.iconUrl ? `<img src="${data.iconUrl}" style="width:100%; height:100%; object-fit:cover;">` : '<span style="color:#444;">No Image</span>';
 
-    document.getElementById('char-view-name').textContent = data.name || "名称未定";
-    document.getElementById('char-view-ruby').textContent = data.ruby || "";
+    // 名前（名字と名前の分離に対応）
+    const lastName = data.lastName || data.name || "名称未定";
+    const firstName = data.firstName || "";
+    const lastNameRuby = data.lastNameRuby || data.ruby || "";
+    const firstNameRuby = data.firstNameRuby || "";
+
+    document.getElementById('char-view-last-name').textContent = lastName;
+    document.getElementById('char-view-first-name').textContent = firstName;
+    document.getElementById('char-view-last-ruby').textContent = lastNameRuby;
+    document.getElementById('char-view-first-ruby').textContent = firstNameRuby;
+
     document.getElementById('char-view-alias').textContent = data.alias || "";
+    document.getElementById('char-view-birth').textContent = data.birth || "";
+    document.getElementById('char-view-age').textContent = data.age || "";
+    document.getElementById('char-view-role').textContent = data.role || "";
+    document.getElementById('char-view-height').textContent = data.height || "";
 
-    // ステータス表示
-    const statsContainer = document.getElementById('char-view-stats');
-    const stats = [
-        { label: "年齢", value: data.age },
-        { label: "誕生日", value: data.birth },
-        { label: "役職", value: data.role },
-        { label: "身長", value: data.height }
-    ];
-    statsContainer.innerHTML = stats
-        .filter(s => s.value)
-        .map(s => `<div><label style="font-size:0.7rem; color:#888; display:block;">${s.label}</label><span>${escapeHtml(s.value)}</span></div>`)
-        .join('');
-
-    // メモ表示
+    // メモ表示 (見た目・性格、特技、生い立ちなど)
     const memosContainer = document.getElementById('char-view-memos');
     const memoItems = [
         { label: "見た目・性格", value: data.looks },
@@ -138,16 +138,27 @@ export async function openCharEditor(id = null) {
 }
 
 function resetFields() {
-    const fields = ['char-name', 'char-ruby', 'char-alias', 'char-age', 'char-birth', 'char-role', 'char-height', 'char-looks', 'char-skill', 'char-history'];
-    fields.forEach(f => document.getElementById(f).value = "");
+    const fields = [
+        'char-last-name', 'char-first-name', 'char-last-ruby', 'char-first-ruby',
+        'char-alias', 'char-age', 'char-birth', 'char-role', 'char-height',
+        'char-looks', 'char-skill', 'char-history'
+    ];
+    fields.forEach(f => {
+        const el = document.getElementById(f);
+        if (el) el.value = "";
+    });
     document.getElementById('char-custom-items').innerHTML = "";
     document.getElementById('char-icon-preview').innerHTML = '<span style="color:#444;">No Image</span>';
     document.getElementById('char-icon-input').value = "";
 }
 
 function fillFields(data) {
-    document.getElementById('char-name').value = data.name || "";
-    document.getElementById('char-ruby').value = data.ruby || "";
+    // 名字・名前の分離対応
+    document.getElementById('char-last-name').value = data.lastName || data.name || "";
+    document.getElementById('char-first-name').value = data.firstName || "";
+    document.getElementById('char-last-ruby').value = data.lastNameRuby || data.ruby || "";
+    document.getElementById('char-first-ruby').value = data.firstNameRuby || "";
+
     document.getElementById('char-alias').value = data.alias || "";
     document.getElementById('char-age').value = data.age || "";
     document.getElementById('char-birth').value = data.birth || "";
@@ -227,8 +238,10 @@ export async function saveCharacter() {
         // window.firebase を使用して確実にグローバルを参照
         const fb = window.firebase;
         const data = {
-            name: document.getElementById('char-name').value.trim() || "名称未定",
-            ruby: document.getElementById('char-ruby').value,
+            lastName: document.getElementById('char-last-name').value.trim() || "(名字未入力)",
+            firstName: document.getElementById('char-first-name').value.trim() || "",
+            lastNameRuby: document.getElementById('char-last-ruby').value.trim(),
+            firstNameRuby: document.getElementById('char-first-ruby').value.trim(),
             alias: document.getElementById('char-alias').value,
             age: document.getElementById('char-age').value,
             birth: document.getElementById('char-birth').value,

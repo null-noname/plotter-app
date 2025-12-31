@@ -83,14 +83,22 @@ function createCharCard(char) {
     card.style.gap = '12px';
     card.style.padding = '8px 12px';
 
+    // 名前（名字と名前の分離に対応）
+    const lastName = char.lastName || char.name || "名称未定";
+    const firstName = char.firstName || "";
+    const lastNameRuby = char.lastNameRuby || char.ruby || "";
+    const firstNameRuby = char.firstNameRuby || "";
+    const fullName = (lastName + " " + firstName).trim();
+    const fullRuby = (lastNameRuby + " " + firstNameRuby).trim();
+
     // HTML構築 (イベントは後で紐付け)
     card.innerHTML = `
-        <div class="char-icon-thumb" style="width:50px; height:50px; background:#111; border:1px solid #555; overflow:hidden; display:flex; align-items:center; justify-content:center;">
+        <div class="char-icon-thumb" style="width:50px; height:50px; background:#111; border:1px solid #555; overflow:hidden; display:flex; align-items:center; justify-content:center; border-radius:4px;">
             ${char.iconUrl ? `<img src="${char.iconUrl}" style="width:100%; height:100%; object-fit:cover;">` : '<span style="font-size:0.6rem; color:#444;">No thumb</span>'}
         </div>
         <div class="char-click-area" style="flex:1; cursor:pointer;">
-            <div style="font-size:0.75rem; color:#888;">${escapeHtml(char.ruby || "")}</div>
-            <h3 style="font-size:1.1rem; color:#fff;">${escapeHtml(char.name || "名称未定")}</h3>
+            <div style="font-size:0.75rem; color:#888;">${escapeHtml(fullRuby)}</div>
+            <h3 style="font-size:1.1rem; color:#fff;">${escapeHtml(fullName)}</h3>
         </div>
         <div style="display:flex; gap:6px;">
             <button class="btn-sort btn-up">▲</button>
