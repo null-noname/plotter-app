@@ -20,7 +20,7 @@ export function initCharList() {
 
     // 状態を監視して、作品選択やタブが変わったら再描画
     subscribe((state) => {
-        if (state.currentTab === 'char') {
+        if (state.currentTab === 'characters') {
             refreshCharList(state);
         }
     });
