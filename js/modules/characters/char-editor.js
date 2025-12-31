@@ -18,21 +18,21 @@ export function initCharEditor() {
     window.plotter_moveChar = moveChar;
 
     // イベントリスナーの登録
-    const saveBtn = document.querySelector('#char-edit-view .btn-retro.save');
+    const saveBtn = document.getElementById('char-save-btn');
     if (saveBtn) saveBtn.addEventListener('click', saveCharacter);
 
-    const backBtn = document.querySelector('#char-edit-view .btn-retro.back');
+    const backBtn = document.getElementById('char-edit-back');
     if (backBtn) backBtn.addEventListener('click', closeCharEditor);
 
     const iconInput = document.getElementById('char-icon-input');
     if (iconInput) iconInput.addEventListener('change', onIconFileChange);
 
-    const changeIconBtn = document.querySelector('#char-edit-view button[style*="font-size:0.7rem"]');
+    const changeIconBtn = document.getElementById('char-icon-change-btn');
     if (changeIconBtn && iconInput) {
         changeIconBtn.addEventListener('click', () => iconInput.click());
     }
 
-    const addItemBtn = document.querySelector('#char-edit-view button[style*="font-size:0.9rem"]');
+    const addItemBtn = document.getElementById('char-item-add-btn');
     if (addItemBtn) {
         addItemBtn.addEventListener('click', () => addCharCustomItem());
     }

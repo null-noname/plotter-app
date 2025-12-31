@@ -195,7 +195,7 @@
                     <div
                         style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; border-bottom:1px solid #333; padding-bottom:10px;">
                         <h2 class="retro-subtitle" style="margin:0;">登場人物</h2>
-                        <button class="btn-retro save">＋新規キャラ</button>
+                        <button id="char-new-btn" class="btn-retro save">＋新規キャラ</button>
                     </div>
                     <div id="char-list-container">
                         <!-- Loaded via characters.js -->
@@ -204,9 +204,13 @@
 
                 <!-- Character Editor (Hidden by default) -->
                 <div id="char-edit-view" style="display:none;">
-                    <div style="display:flex; gap:10px; margin-bottom:20px;">
-                        <button class="btn-retro back">戻る</button>
-                        <button class="btn-retro save" style="margin-left:auto;">保存</button>
+                    <div
+                        style="display:flex; gap:10px; margin-bottom:20px; border-bottom:1px solid #333; padding-bottom:10px;">
+                        <button id="char-edit-back" class="btn-retro back"
+                            style="padding:4px 12px; font-size:0.8rem;">戻る</button>
+                        <h2 class="retro-subtitle" style="margin:0; flex:1; text-align:center; font-size:1.2rem;">キャラ編集
+                        </h2>
+                        <div style="width:60px;"></div>
                     </div>
 
                     <div class="card-retro">
@@ -217,12 +221,12 @@
                                     style="width:100px; height:100px; background:#111; border:2px solid #555; display:flex; align-items:center; justify-content:center; overflow:hidden;">
                                     <span style="color:#444;">No Image</span>
                                 </div>
-                                <button class="btn-retro"
+                                <button id="char-icon-change-btn" class="btn-retro"
                                     style="font-size:0.7rem; padding:4px 8px; margin-top:8px;">画像変更</button>
                                 <input type="file" id="char-icon-input" style="display:none;" accept="image/*">
                             </div>
                             <div style="flex:1;">
-                                <label style="font-size:0.7rem; color:var(--clr-save);">名前（ルビ）</label>
+                                <label class="gold-bold" style="font-size:0.7rem;">名前（ルビ）</label>
                                 <input type="text" id="char-name" placeholder="名前"
                                     style="width:100%; padding:8px; background:#111; border:1px solid #444; color:#fff; font-size:1.4rem; margin-bottom:8px;">
                                 <input type="text" id="char-ruby" placeholder="ふりがな・ルビ"
@@ -236,22 +240,22 @@
                         <div
                             style="display:grid; grid-template-columns: repeat(auto-fit, minmax(80px, 1fr)); gap:8px; margin-bottom:20px;">
                             <div>
-                                <label style="font-size:0.6rem; color:#888;">年齢</label>
+                                <label class="gold-bold" style="font-size:0.6rem;">年齢</label>
                                 <input type="text" id="char-age"
                                     style="width:100%; padding:6px; background:#111; border:1px solid #444; color:#fff;">
                             </div>
                             <div>
-                                <label style="font-size:0.6rem; color:#888;">誕生日</label>
+                                <label class="gold-bold" style="font-size:0.6rem;">誕生日</label>
                                 <input type="text" id="char-birth"
                                     style="width:100%; padding:6px; background:#111; border:1px solid #444; color:#fff;">
                             </div>
                             <div>
-                                <label style="font-size:0.6rem; color:#888;">役職</label>
+                                <label class="gold-bold" style="font-size:0.6rem;">役職</label>
                                 <input type="text" id="char-role"
                                     style="width:100%; padding:6px; background:#111; border:1px solid #444; color:#fff;">
                             </div>
                             <div>
-                                <label style="font-size:0.6rem; color:#888;">身長</label>
+                                <label class="gold-bold" style="font-size:0.6rem;">身長</label>
                                 <input type="text" id="char-height"
                                     style="width:100%; padding:6px; background:#111; border:1px solid #444; color:#fff;">
                             </div>
@@ -260,24 +264,29 @@
                         <!-- Bottom Section: Detailed Memos -->
                         <div id="char-memos-container">
                             <div class="char-memo-item" style="margin-bottom:12px;">
-                                <label style="font-size:0.75rem; color:var(--clr-save);">見た目・性格</label>
+                                <label class="gold-bold" style="font-size:0.75rem;">見た目・性格</label>
                                 <textarea id="char-looks"
                                     style="width:100%; height:80px; padding:8px; background:#111; border:1px solid #444; color:#fff; resize:none;"></textarea>
                             </div>
                             <div class="char-memo-item" style="margin-bottom:12px;">
-                                <label style="font-size:0.75rem; color:var(--clr-save);">特技</label>
+                                <label class="gold-bold" style="font-size:0.75rem;">特技</label>
                                 <textarea id="char-skill"
                                     style="width:100%; height:60px; padding:8px; background:#111; border:1px solid #444; color:#fff; resize:none;"></textarea>
                             </div>
                             <div class="char-memo-item" style="margin-bottom:12px;">
-                                <label style="font-size:0.75rem; color:var(--clr-save);">生い立ち</label>
+                                <label class="gold-bold" style="font-size:0.75rem;">生い立ち</label>
                                 <textarea id="char-history"
                                     style="width:100%; height:100px; padding:8px; background:#111; border:1px solid #444; color:#fff; resize:none;"></textarea>
                             </div>
                             <div id="char-custom-items">
                                 <!-- Dynamic items -->
                             </div>
-                            <button class="btn-retro" style="font-size:0.9rem; padding:4px 12px;">＋項目追加</button>
+                            <button id="char-item-add-btn" class="btn-retro"
+                                style="font-size:0.9rem; padding:4px 12px;">＋項目追加</button>
+                        </div>
+                        <div style="text-align:center; padding-top:20px; border-top:1px solid #333; margin-top:20px;">
+                            <button id="char-save-btn" class="btn-retro save"
+                                style="padding:10px 80px; font-size:1.1rem;">保存</button>
                         </div>
                     </div>
                 </div>

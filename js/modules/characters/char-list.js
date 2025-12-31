@@ -6,12 +6,18 @@ import { getDb } from '../../core/firebase.js';
 import { getState, setState, subscribe } from '../../core/state.js';
 import { escapeHtml, clearContainer } from '../../utils/dom-utils.js';
 
+import { openCharEditor, moveChar, deleteChar } from './char-editor.js';
+
 let unsubscribeChars = null;
 
 /**
  * 登場人物一覧の初期化
  */
 export function initCharList() {
+    // 新規作成ボタン
+    const newBtn = document.getElementById('char-new-btn');
+    if (newBtn) newBtn.addEventListener('click', () => openCharEditor());
+
     // 状態を監視して、作品選択やタブが変わったら再描画
     subscribe((state) => {
         if (state.currentTab === 'char') {
@@ -95,19 +101,19 @@ function createCharCard(char) {
 
     // イベントの紐付け
     card.querySelector('.char-click-area').addEventListener('click', () => {
-        if (window.plotter_openCharEditor) window.plotter_openCharEditor(char.id);
+        openCharEditor(char.id);
     });
 
     card.querySelector('.btn-up').addEventListener('click', () => {
-        if (window.plotter_moveChar) window.plotter_moveChar(char.id, -1);
+        moveChar(char.id, -1);
     });
 
     card.querySelector('.btn-down').addEventListener('click', () => {
-        if (window.plotter_moveChar) window.plotter_moveChar(char.id, 1);
+        moveChar(char.id, 1);
     });
 
     card.querySelector('.btn-delete').addEventListener('click', () => {
-        if (window.plotter_deleteChar) window.plotter_deleteChar(char.id);
+        deleteChar(char.id);
     });
 
     return card;
