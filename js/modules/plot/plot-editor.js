@@ -260,15 +260,18 @@ export async function savePlot() {
         const db = getDb();
         const ref = db.collection("works").doc(state.selectedWorkId).collection("plots");
 
+        let savedId = currentPlotId;
         if (currentPlotId) {
             await ref.doc(currentPlotId).update(data);
         } else {
             const snap = await ref.get();
             data.order = snap.size;
             data.createdAt = fb.firestore.FieldValue.serverTimestamp();
-            await ref.add(data);
+            const docRef = await ref.add(data);
+            savedId = docRef.id;
         }
-        closePlotEditor();
+        // 保存後は一覧ではなく閲覧モードへ遷移
+        openPlotView(savedId);
     } catch (error) {
         console.error('[PlotEditor] 保存エラー:', error);
     }
