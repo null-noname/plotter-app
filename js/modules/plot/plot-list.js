@@ -1,3 +1,10 @@
+/**
+ * plot-list.js - プロット一覧表示の管理
+ */
+
+import { getDb } from '../../core/firebase.js';
+import { subscribe } from '../../core/state.js';
+import { escapeHtml, clearContainer } from '../../utils/dom-utils.js';
 import { openPlotEditor } from './plot-editor.js';
 
 let unsubscribePlots = null;

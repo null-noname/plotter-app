@@ -21,8 +21,12 @@ export function initPlotEditor() {
     const saveBtn = document.getElementById('plot-save-btn');
     if (saveBtn) saveBtn.addEventListener('click', savePlot);
 
-    const backBtn = document.querySelector('#plot-edit-view .btn-retro.back');
-    if (backBtn) backBtn.addEventListener('click', closePlotEditor);
+    const backBtn = document.getElementById('plot-edit-back');
+    if (backBtn) {
+        backBtn.addEventListener('click', closePlotEditor);
+    } else {
+        console.error('[PlotEditor] 戻るボタンが見つかりません (#plot-edit-back)');
+    }
 
     const typeNormalBtn = document.getElementById('plot-type-normal');
     if (typeNormalBtn) typeNormalBtn.addEventListener('click', () => setPlotType('normal'));
