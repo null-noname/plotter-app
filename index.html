@@ -420,7 +420,7 @@
                     <div
                         style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; border-bottom:1px solid #333; padding-bottom:10px;">
                         <h2 class="retro-subtitle" style="margin:0;">メモ一覧</h2>
-                        <button class="btn-retro add">＋新規メモ</button>
+                        <button id="memo-new-btn" class="btn-retro add">＋新規メモ</button>
                     </div>
                     <div id="memo-filter-bar" style="margin-bottom:16px;">
                         <!-- Tag filters will appear here -->
@@ -430,7 +430,22 @@
                     </div>
                 </div>
 
-                <!-- Memo Editor/Viewer (Hidden by default) -->
+                <!-- Memo Viewer -->
+                <div id="memo-view-view" style="display:none;">
+                    <div style="display:flex; gap:10px; margin-bottom:20px;">
+                        <button id="memo-view-back" class="btn-retro back">戻る</button>
+                        <button id="memo-view-edit-btn" class="btn-retro blue" style="margin-left:auto;">編集</button>
+                    </div>
+                    <div class="card-retro">
+                        <h3 id="memo-view-title" style="color:#fff; font-size:1.6rem; margin-bottom:12px;">無題</h3>
+                        <div id="memo-view-tags" style="display:flex; gap:6px; flex-wrap:wrap; margin-bottom:15px;">
+                        </div>
+                        <div id="memo-view-content"
+                            style="color:#fff; white-space:pre-wrap; line-height:1.7; font-size:1.1rem;"></div>
+                    </div>
+                </div>
+
+                <!-- Memo Editor -->
                 <div id="memo-edit-view" style="display:none;">
                     <div style="display:flex; gap:10px; margin-bottom:20px;">
                         <button class="btn-retro back">戻る</button>

@@ -4,6 +4,7 @@
 
 import { getDb } from '../../core/firebase.js';
 import { getState } from '../../core/state.js';
+import { escapeHtml } from '../../utils/dom-utils.js';
 
 let currentMemoId = null;
 
@@ -13,15 +14,60 @@ let currentMemoId = null;
 export function initMemoEditor() {
     // グローバルブリッジ
     window.plotter_openMemoEditor = openMemoEditor;
+    window.plotter_openMemoView = openMemoView;
     window.plotter_deleteMemo = deleteMemo;
     window.plotter_moveMemo = moveMemo;
 
-    // イベントリスナー
+    // イベントリスナー: 新規作成
+    const newBtn = document.getElementById('memo-new-btn');
+    if (newBtn) newBtn.addEventListener('click', () => openMemoEditor(null));
+
+    // イベントリスナー: 保存
     const saveBtn = document.querySelector('#memo-edit-view .btn-retro.save');
     if (saveBtn) saveBtn.addEventListener('click', saveMemo);
 
+    // イベントリスナー: 戻る
     const backBtn = document.querySelector('#memo-edit-view .btn-retro.back');
-    if (backBtn) backBtn.addEventListener('click', closeMemoEditor);
+    if (backBtn) backBtn.addEventListener('click', () => {
+        if (currentMemoId) {
+            openMemoView(currentMemoId);
+        } else {
+            closeMemoEditor();
+        }
+    });
+
+    // 閲覧画面用：戻る・編集
+    const viewBackBtn = document.getElementById('memo-view-back');
+    if (viewBackBtn) viewBackBtn.addEventListener('click', closeMemoEditor);
+
+    const viewEditBtn = document.getElementById('memo-view-edit-btn');
+    if (viewEditBtn) viewEditBtn.addEventListener('click', () => openMemoEditor(currentMemoId));
+}
+
+/**
+ * 閲覧モードを開く
+ */
+export async function openMemoView(id) {
+    const state = getState();
+    if (!state.selectedWorkId) return;
+
+    currentMemoId = id;
+    const db = getDb();
+    const doc = await db.collection("works").doc(state.selectedWorkId)
+        .collection("memos").doc(id).get();
+
+    if (!doc.exists) return;
+    const data = doc.data();
+
+    // 表示切り替え
+    document.getElementById('memo-list-view').style.display = 'none';
+    document.getElementById('memo-edit-view').style.display = 'none';
+    document.getElementById('memo-view-view').style.display = 'block';
+
+    document.getElementById('memo-view-title').textContent = data.title || "無題";
+    const tagsContainer = document.getElementById('memo-view-tags');
+    tagsContainer.innerHTML = (data.tags || []).map(t => `<span class="tag" style="background:#333; color:#fff;">${escapeHtml(t)}</span>`).join('');
+    document.getElementById('memo-view-content').textContent = data.content || "";
 }
 
 /**
@@ -30,6 +76,7 @@ export function initMemoEditor() {
 export async function openMemoEditor(id = null) {
     currentMemoId = id;
     document.getElementById('memo-list-view').style.display = 'none';
+    document.getElementById('memo-view-view').style.display = 'none';
     document.getElementById('memo-edit-view').style.display = 'block';
 
     const titleInput = document.getElementById('memo-title');
@@ -59,6 +106,7 @@ export async function openMemoEditor(id = null) {
  */
 export function closeMemoEditor() {
     document.getElementById('memo-list-view').style.display = 'block';
+    document.getElementById('memo-view-view').style.display = 'none';
     document.getElementById('memo-edit-view').style.display = 'none';
 }
 
@@ -67,34 +115,37 @@ export function closeMemoEditor() {
  */
 export async function saveMemo() {
     const state = getState();
-    if (!state.currentUser) return;
+    if (!state.currentUser || !state.selectedWorkId) return;
 
     const title = document.getElementById('memo-title').value.trim();
     const tags = document.getElementById('memo-tags').value.split(',').map(t => t.trim()).filter(t => t);
     const content = document.getElementById('memo-content').value;
 
+    const fb = window.firebase || firebase;
     const data = {
         uid: state.currentUser.uid,
         title: title || "無題",
         tags: tags,
         content: content,
-        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+        updatedAt: fb.firestore.FieldValue.serverTimestamp()
     };
 
     const db = getDb();
     const collection = db.collection("works").doc(state.selectedWorkId).collection("memos");
 
     try {
+        let savedId = currentMemoId;
         if (currentMemoId) {
             await collection.doc(currentMemoId).update(data);
         } else {
-            // 新規作成時のオーダー設定
             const snap = await collection.get();
             data.order = snap.size;
-            data.createdAt = firebase.firestore.FieldValue.serverTimestamp();
-            await collection.add(data);
+            data.createdAt = fb.firestore.FieldValue.serverTimestamp();
+            const docRef = await collection.add(data);
+            savedId = docRef.id;
         }
-        closeMemoEditor();
+        // 保存後は閲覧モードへ遷移
+        openMemoView(savedId);
     } catch (error) {
         console.error('[MemoEditor] 保存エラー:', error);
     }

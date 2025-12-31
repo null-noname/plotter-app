@@ -136,7 +136,7 @@ function createMemoCard(memo) {
     card.innerHTML = `
         <div style="display:flex; justify-content:space-between; align-items:flex-start;">
             <div class="memo-click-area" style="flex:1; cursor:pointer;">
-                <h3 style="font-size:1.3rem; margin-bottom:8px; color:var(--clr-save);">${escapeHtml(memo.title || "無題")}</h3>
+                <h3 style="font-size:1.3rem; margin-bottom:8px; color:#fff;">${escapeHtml(memo.title || "無題")}</h3>
                 <div style="font-size:0.9rem; color:#aaa; white-space:pre-wrap; margin-bottom:12px;">${escapeHtml(preview)}...</div>
                 <div style="display:flex; gap:6px; flex-wrap:wrap;">
                     ${(memo.tags || []).map(t => `<span class="tag" style="color:#888;">${escapeHtml(t)}</span>`).join('')}
@@ -152,7 +152,7 @@ function createMemoCard(memo) {
 
     // イベント
     card.querySelector('.memo-click-area').addEventListener('click', () => {
-        if (window.plotter_openMemoEditor) window.plotter_openMemoEditor(memo.id);
+        if (window.plotter_openMemoView) window.plotter_openMemoView(memo.id);
     });
 
     card.querySelector('.btn-up').addEventListener('click', () => {
