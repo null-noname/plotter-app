@@ -123,15 +123,13 @@ function renderTimelineEntries() {
         row.style.alignItems = 'flex-start';
 
         row.innerHTML = `
-            <div style="flex: 1; display:flex; flex-direction:column; gap:4px;">
-                <input type="text" class="tl-date" placeholder="日時" value="${item.date}"
-                    style="width:100%; padding:6px; background:#0a0a0a; border:1px solid #333; color:var(--clr-save); font-size:0.85rem;">
-                <textarea class="tl-content" placeholder="内容"
-                    style="width:100%; height:80px; padding:8px; background:#111; border:1px solid #444; color:#fff; font-size:0.95rem; resize:none;">${item.content}</textarea>
-            </div>
-            <div style="display:flex; flex-direction:column; gap:8px;">
-                <button class="btn-sort tl-up" style="${index === 0 ? 'opacity:0.3; cursor:default;' : ''}">▲</button>
-                <button class="btn-icon tl-del" style="background:transparent; color:var(--clr-delete); font-size:1.2rem;">×</button>
+            <input type="text" class="tl-date" placeholder="時" value="${item.date}"
+                style="width:50px; padding:6px; background:#0a0a0a; border:1px solid #333; color:var(--clr-save); font-size:0.85rem; align-self: stretch;">
+            <textarea class="tl-content" placeholder="内容"
+                style="flex: 1; height:40px; padding:8px; background:#111; border:1px solid #444; color:#fff; font-size:0.95rem; resize:vertical;">${item.content}</textarea>
+            <div style="display:flex; gap:4px; align-items: center;">
+                <button class="btn-sort tl-up" style="${index === 0 ? 'opacity:0.3; cursor:default;' : ''} padding: 4px 8px;">▲</button>
+                <button class="btn-icon tl-del" style="background:transparent; color:var(--clr-delete); font-size:1.5rem; padding: 0 4px; line-height: 1;">×</button>
             </div>
         `;
 
