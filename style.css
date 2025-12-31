@@ -17,6 +17,10 @@
     /* Light Gray */
 }
 
+.text-error {
+    color: var(--clr-delete) !important;
+}
+
 * {
     box-sizing: border-box;
     margin: 0;

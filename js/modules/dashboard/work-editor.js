@@ -156,7 +156,7 @@ function renderWorkView(container, data) {
     container.innerHTML = `
         <div class="card-retro">
             <h3 style="color:#fff; font-size:1.6rem; margin-bottom:10px;">${escapeHtml(data.title || "無題")}</h3>
-            ${data.catchphrase ? `<div style="color:var(--clr-save); font-weight:bold; margin-bottom:15px; font-size:1rem;">${escapeHtml(data.catchphrase)}</div>` : ''}
+            ${data.catchphrase ? `<div style="color:#fff; font-weight:bold; margin-bottom:15px; font-size:1rem;">${escapeHtml(data.catchphrase)}</div>` : ''}
             
             <div style="margin-bottom:20px; color:#ddd; white-space:pre-wrap; line-height:1.7; font-size:1.1rem; padding:15px; background:rgba(255,255,255,0.03); border-radius:4px;">${escapeHtml(data.description || "あらすじ未入力")}</div>
 
@@ -188,7 +188,7 @@ function generateFormHtml(p) {
             <div class="form-group mb-20">
                 <div style="display:flex; justify-content:space-between;">
                     <label class="gold-bold">キャッチコピー（残35字）</label>
-                    <span id="${p}-f-catch-count" style="font-size:0.75rem; color:#888; display:none;">残35字</span>
+                    <span id="${p}-f-catch-count" style="font-size:0.75rem; color:#888;">残35字</span>
                 </div>
                 <input type="text" id="${p}-f-catchphrase" maxlength="35" placeholder="読者を惹きつける一言..." style="width:100%; padding:8px; background:#111; border:1px solid #444; color:#fff;">
             </div>
@@ -360,6 +360,12 @@ function updateCatchCount(input, disp) {
     if (input && disp) {
         const remaining = 35 - input.value.length;
         disp.textContent = `残${remaining}字`;
+
+        if (remaining <= 0) {
+            disp.classList.add('text-error');
+        } else {
+            disp.classList.remove('text-error');
+        }
     }
 }
 
