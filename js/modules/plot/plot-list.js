@@ -81,19 +81,15 @@ function createPlotCard(plot) {
 
     // HTML構築 (イベントは後で紐付け)
     card.innerHTML = `
-        <div style="display:flex; justify-content:space-between; align-items:flex-start;">
-            <div class="plot-click-area" style="flex:1; cursor:pointer;">
-                <div style="display:flex; align-items:center; gap:8px; margin-bottom:4px;">
-                    <span class="tag" style="color:var(--clr-save); border-color:var(--clr-save); font-size:0.7rem;">${plot.type === 'timeline' ? 'TL' : '通常'}</span>
-                    <h3 style="font-size:1.2rem; color:#fff;">${escapeHtml(plot.title || "無題")}</h3>
-                </div>
-                ${plot.date ? `<div style="font-size:0.85rem; color:var(--clr-save); margin-bottom:4px;">${escapeHtml(plot.date)}</div>` : ''}
-                <div style="font-size:0.9rem; color:#aaa; white-space:pre-wrap;">${escapeHtml(preview)}...</div>
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+            <div class="plot-click-area" style="flex:1; cursor:pointer; display:flex; align-items:center; gap:12px; min-width:0;">
+                <h3 style="font-size:1.1rem; color:#fff; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; flex:1;">${escapeHtml(plot.title || "無題")}</h3>
+                <span class="tag" style="color:var(--clr-save); border-color:var(--clr-save); font-size:0.75rem; flex-shrink:0;">${plot.type === 'timeline' ? 'TL' : '基本'}</span>
             </div>
-            <div style="display:flex; flex-direction:column; gap:8px; margin-left:16px;">
+            <div style="display:flex; align-items:center; gap:8px; margin-left:12px;">
                 <button class="btn-sort btn-up">▲</button>
                 <button class="btn-sort btn-down">▼</button>
-                <button class="btn-icon btn-delete" style="background:transparent; color:var(--clr-delete); font-size:1.2rem; margin-top:10px;">🗑</button>
+                <button class="btn-icon btn-delete" style="background:transparent; color:var(--clr-delete); font-size:1.1rem; padding: 4px;">🗑</button>
             </div>
         </div>
     `;

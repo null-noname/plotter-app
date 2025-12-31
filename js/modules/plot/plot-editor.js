@@ -101,6 +101,12 @@ export async function openPlotEditor(id = null) {
     document.getElementById('plot-view-view').style.display = 'none';
     document.getElementById('plot-edit-view').style.display = 'block';
 
+    // 既存プロット編集時はタイプ変更不可
+    const typeSelectorRow = document.querySelector('#plot-edit-view .btn-group')?.parentElement;
+    if (typeSelectorRow) {
+        typeSelectorRow.style.display = id ? 'none' : 'flex';
+    }
+
     const titleInput = document.getElementById('plot-title');
     const contentInput = document.getElementById('plot-content');
 
