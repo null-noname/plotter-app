@@ -155,10 +155,13 @@ function renderWorkView(container, data) {
 
     container.innerHTML = `
         <div class="card-retro">
-            <h3 style="color:#fff; font-size:1.6rem; margin-bottom:10px;">${escapeHtml(data.title || "無題")}</h3>
-            ${data.catchphrase ? `<div style="color:#fff; font-weight:bold; margin-bottom:15px; font-size:1rem;">${escapeHtml(data.catchphrase)}</div>` : ''}
+            <h3 style="color:#fff; font-size:1.6rem; margin-bottom:15px;">${escapeHtml(data.title || "無題")}</h3>
             
-            <div style="margin-bottom:20px; color:#ddd; white-space:pre-wrap; line-height:1.7; font-size:1.1rem; padding:15px; background:rgba(255,255,255,0.03); border-radius:4px;">${escapeHtml(data.description || "あらすじ未入力")}</div>
+            <label class="gold-bold" style="font-size:0.8rem; opacity:0.7;">キャッチコピー</label>
+            <div style="color:#fff; font-weight:bold; margin-bottom:15px; font-size:1.1rem;">${escapeHtml(data.catchphrase || "（未設定）")}</div>
+            
+            <label class="gold-bold" style="font-size:0.8rem; opacity:0.7;">あらすじ・概要</label>
+            <div style="margin-bottom:20px; color:#ddd; white-space:pre-wrap; line-height:1.7; font-size:1.1rem; padding:15px; background:rgba(255,255,255,0.05); border-radius:4px;">${escapeHtml(data.description || "あらすじ未入力")}</div>
 
             <div style="display:grid; grid-template-columns: 1fr 1fr; gap:15px; font-size:0.9rem; color:#aaa;">
                 <div><span class="gold-bold">状態:</span> <span style="color:#fff;">${statusLabel}</span></div>

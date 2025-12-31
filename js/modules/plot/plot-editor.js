@@ -67,12 +67,13 @@ export async function openPlotView(id) {
     document.getElementById('plot-view-catchphrase').textContent = data.catchphrase || "";
     document.getElementById('plot-view-description').textContent = data.description || "";
 
-    const basicView = document.getElementById('plot-view-basic-content');
+    const basicViewArea = document.getElementById('plot-view-basic-content-area');
+    const basicContent = document.getElementById('plot-view-basic-content');
     const timelineView = document.getElementById('plot-view-timeline-content');
     const timelineList = document.getElementById('plot-view-timeline-list');
 
     if (data.type === 'timeline') {
-        basicView.style.display = 'none';
+        if (basicViewArea) basicViewArea.style.display = 'none';
         timelineView.style.display = 'block';
         timelineList.innerHTML = (data.timelineItems || []).map(item => `
             <div style="display:flex; gap:12px; margin-bottom:15px; border-bottom:1px solid #333; padding-bottom:10px;">
@@ -81,9 +82,9 @@ export async function openPlotView(id) {
             </div>
         `).join('');
     } else {
-        basicView.style.display = 'block';
+        if (basicViewArea) basicViewArea.style.display = 'block';
         timelineView.style.display = 'none';
-        basicView.textContent = data.content || "";
+        basicContent.textContent = data.content || "";
     }
 }
 
