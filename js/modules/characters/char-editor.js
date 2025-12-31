@@ -14,6 +14,7 @@ let pendingIconFile = null;
 export function initCharEditor() {
     // グローバルブリッジの登録
     window.plotter_openCharEditor = openCharEditor;
+    window.plotter_openCharView = openCharView;
     window.plotter_deleteChar = deleteChar;
     window.plotter_moveChar = moveChar;
 
@@ -36,6 +37,74 @@ export function initCharEditor() {
     if (addItemBtn) {
         addItemBtn.addEventListener('click', () => addCharCustomItem());
     }
+
+    // 閲覧モード用ボタン
+    const viewBackBtn = document.getElementById('char-view-back');
+    if (viewBackBtn) viewBackBtn.addEventListener('click', closeCharEditor);
+
+    const viewEditBtn = document.getElementById('char-view-edit-btn');
+    if (viewEditBtn) viewEditBtn.addEventListener('click', () => openCharEditor(currentCharId));
+}
+
+/**
+ * 閲覧モードを開く
+ */
+export async function openCharView(id) {
+    const state = getState();
+    if (!state.selectedWorkId) return;
+
+    currentCharId = id;
+    document.getElementById('char-list-view').style.display = 'none';
+    document.getElementById('char-view-view').style.display = 'block';
+    document.getElementById('char-edit-view').style.display = 'none';
+
+    const db = getDb();
+    const doc = await db.collection("works").doc(state.selectedWorkId)
+        .collection("characters").doc(id).get();
+
+    if (!doc.exists) return;
+    const data = doc.data();
+
+    // データの流し込み
+    const iconContainer = document.getElementById('char-view-icon');
+    iconContainer.innerHTML = data.iconUrl ? `<img src="${data.iconUrl}" style="width:100%; height:100%; object-fit:cover;">` : '<span style="color:#444;">No Image</span>';
+
+    document.getElementById('char-view-name').textContent = data.name || "名称未定";
+    document.getElementById('char-view-ruby').textContent = data.ruby || "";
+    document.getElementById('char-view-alias').textContent = data.alias || "";
+
+    // ステータス表示
+    const statsContainer = document.getElementById('char-view-stats');
+    const stats = [
+        { label: "年齢", value: data.age },
+        { label: "誕生日", value: data.birth },
+        { label: "役職", value: data.role },
+        { label: "身長", value: data.height }
+    ];
+    statsContainer.innerHTML = stats
+        .filter(s => s.value)
+        .map(s => `<div><label style="font-size:0.7rem; color:#888; display:block;">${s.label}</label><span>${escapeHtml(s.value)}</span></div>`)
+        .join('');
+
+    // メモ表示
+    const memosContainer = document.getElementById('char-view-memos');
+    const memoItems = [
+        { label: "見た目・性格", value: data.looks },
+        { label: "特技", value: data.skill },
+        { label: "生い立ち", value: data.history }
+    ];
+
+    // カスタム項目も統合
+    (data.customItems || []).forEach(ci => memoItems.push({ label: ci.label, value: ci.value }));
+
+    memosContainer.innerHTML = memoItems
+        .filter(m => m.value)
+        .map(m => `
+            <div>
+                <label class="gold-bold" style="font-size:0.8rem; display:block; margin-bottom:5px;">${m.label}</label>
+                <div style="color:#ddd; white-space:pre-wrap; line-height:1.6; padding-left:10px; border-left:2px solid #444;">${escapeHtml(m.value)}</div>
+            </div>
+        `).join('');
 }
 
 /**
@@ -51,6 +120,7 @@ export async function openCharEditor(id = null) {
     currentCharId = id;
     pendingIconFile = null;
     document.getElementById('char-list-view').style.display = 'none';
+    document.getElementById('char-view-view').style.display = 'none';
     document.getElementById('char-edit-view').style.display = 'block';
 
     resetFields();
@@ -192,6 +262,7 @@ export async function saveCharacter() {
 
 export function closeCharEditor() {
     document.getElementById('char-list-view').style.display = 'block';
+    document.getElementById('char-view-view').style.display = 'none';
     document.getElementById('char-edit-view').style.display = 'none';
 }
 

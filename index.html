@@ -191,6 +191,42 @@
 
             <!-- Character Tab -->
             <section id="tab-characters" class="tab-content">
+                <!-- Character View Mode (Hidden by default) -->
+                <div id="char-view-view" style="display:none;">
+                    <div
+                        style="display:flex; gap:10px; margin-bottom:20px; align-items:center; border-bottom:1px solid #333; padding-bottom:10px;">
+                        <button id="char-view-back" class="btn-retro back"
+                            style="padding:4px 12px; font-size:0.8rem;">戻る</button>
+                        <h2 id="char-view-title-label" class="retro-subtitle"
+                            style="margin:0; flex:1; text-align:center; font-size:1.2rem;">キャラ閲覧</h2>
+                        <button id="char-view-edit-btn" class="btn-retro save"
+                            style="padding:4px 16px; font-size:0.8rem;">編集</button>
+                    </div>
+                    <div class="card-retro">
+                        <div style="display:flex; gap:20px; margin-bottom:20px; align-items: flex-start;">
+                            <div id="char-view-icon"
+                                style="width:120px; height:120px; background:#111; border:2px solid #555; overflow:hidden; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+                            </div>
+                            <div style="flex:1;">
+                                <div id="char-view-ruby" style="font-size:0.9rem; color:#888; margin-bottom:4px;"></div>
+                                <h3 id="char-view-name"
+                                    style="font-size:1.8rem; color:#fff; border-bottom:1px solid #444; padding-bottom:8px; margin-bottom:8px;">
+                                </h3>
+                                <div id="char-view-alias" style="color:var(--clr-save); font-style:italic;"></div>
+                            </div>
+                        </div>
+
+                        <div id="char-view-stats"
+                            style="display:grid; grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); gap:15px; margin-bottom:20px; background:rgba(0,0,0,0.2); padding:15px; border-radius:4px;">
+                            <!-- Stats like age, birth will be here -->
+                        </div>
+
+                        <div id="char-view-memos" style="display:flex; flex-direction:column; gap:20px;">
+                            <!-- Memos like looks, skills will be here -->
+                        </div>
+                    </div>
+                </div>
+
                 <div id="char-list-view">
                     <div
                         style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; border-bottom:1px solid #333; padding-bottom:10px;">

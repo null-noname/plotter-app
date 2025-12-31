@@ -6,7 +6,7 @@ import { getDb } from '../../core/firebase.js';
 import { getState, setState, subscribe } from '../../core/state.js';
 import { escapeHtml, clearContainer } from '../../utils/dom-utils.js';
 
-import { openCharEditor, moveChar, deleteChar } from './char-editor.js';
+import { openCharEditor, openCharView, moveChar, deleteChar } from './char-editor.js';
 
 let unsubscribeChars = null;
 
@@ -101,7 +101,7 @@ function createCharCard(char) {
 
     // イベントの紐付け
     card.querySelector('.char-click-area').addEventListener('click', () => {
-        openCharEditor(char.id);
+        openCharView(char.id);
     });
 
     card.querySelector('.btn-up').addEventListener('click', () => {
