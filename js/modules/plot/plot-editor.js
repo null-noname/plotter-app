@@ -234,32 +234,33 @@ export async function savePlot() {
         return;
     }
 
-    const data = {
-        title: title,
-        content: currentPlotType === 'timeline' ? "" : content,
-        type: currentPlotType,
-        timelineItems: currentPlotType === 'timeline' ? timelineItems : [],
-        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-    };
-
-    const db = getDb();
-    const ref = db.collection("works").doc(state.selectedWorkId).collection("plots");
-
     try {
+        const fb = window.firebase;
+        const data = {
+            title: title,
+            content: currentPlotType === 'timeline' ? "" : content,
+            type: currentPlotType,
+            timelineItems: currentPlotType === 'timeline' ? timelineItems : [],
+            updatedAt: fb.firestore.FieldValue.serverTimestamp()
+        };
+
+        const db = getDb();
+        const ref = db.collection("works").doc(state.selectedWorkId).collection("plots");
+
         if (currentPlotId) {
             await ref.doc(currentPlotId).update(data);
             alert('保存しました。');
         } else {
             const snap = await ref.get();
             data.order = snap.size;
-            data.createdAt = firebase.firestore.FieldValue.serverTimestamp();
+            data.createdAt = fb.firestore.FieldValue.serverTimestamp();
             await ref.add(data);
             alert('作成しました！');
         }
         closePlotEditor();
     } catch (error) {
         console.error('[PlotEditor] 保存エラー:', error);
-        alert('保存に失敗しました。');
+        alert('保存に失敗しました。詳細はコンソールを確認してください。');
     }
 }
 

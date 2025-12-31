@@ -130,61 +130,63 @@ export async function saveCharacter() {
     const state = getState();
     if (!state.selectedWorkId) return;
 
-    let iconUrl = null;
-    if (pendingIconFile) {
-        const storage = getStorage();
-        const path = `characters/${state.currentUser.uid}/${Date.now()}_${pendingIconFile.name}`;
-        const ref = storage.ref().child(path);
-        await ref.put(pendingIconFile);
-        iconUrl = await ref.getDownloadURL();
-    } else if (currentCharId) {
-        // 保存済みのURLを維持
-        const db = getDb();
-        const doc = await db.collection("works").doc(state.selectedWorkId)
-            .collection("characters").doc(currentCharId).get();
-        if (doc.exists) iconUrl = doc.data().iconUrl;
-    }
-
-    const customItems = [];
-    document.querySelectorAll('#char-custom-items .char-memo-item').forEach(div => {
-        customItems.push({
-            label: div.querySelector('.custom-label').value,
-            value: div.querySelector('.custom-value').value
-        });
-    });
-
-    const data = {
-        name: document.getElementById('char-name').value.trim() || "名称未定",
-        ruby: document.getElementById('char-ruby').value,
-        alias: document.getElementById('char-alias').value,
-        age: document.getElementById('char-age').value,
-        birth: document.getElementById('char-birth').value,
-        role: document.getElementById('char-role').value,
-        height: document.getElementById('char-height').value,
-        looks: document.getElementById('char-looks').value,
-        skill: document.getElementById('char-skill').value,
-        history: document.getElementById('char-history').value,
-        iconUrl: iconUrl,
-        customItems: customItems,
-        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
-    };
-
-    const db = getDb();
-    const ref = db.collection("works").doc(state.selectedWorkId).collection("characters");
-
     try {
+        let iconUrl = null;
+        if (pendingIconFile) {
+            const storage = getStorage();
+            const path = `characters/${state.currentUser.uid}/${Date.now()}_${pendingIconFile.name}`;
+            const ref = storage.ref().child(path);
+            await ref.put(pendingIconFile);
+            iconUrl = await ref.getDownloadURL();
+        } else if (currentCharId) {
+            // 保存済みのURLを維持
+            const db = getDb();
+            const doc = await db.collection("works").doc(state.selectedWorkId)
+                .collection("characters").doc(currentCharId).get();
+            if (doc.exists) iconUrl = doc.data().iconUrl;
+        }
+
+        const customItems = [];
+        document.querySelectorAll('#char-custom-items .char-memo-item').forEach(div => {
+            customItems.push({
+                label: div.querySelector('.custom-label').value,
+                value: div.querySelector('.custom-value').value
+            });
+        });
+
+        // window.firebase を使用して確実にグローバルを参照
+        const fb = window.firebase;
+        const data = {
+            name: document.getElementById('char-name').value.trim() || "名称未定",
+            ruby: document.getElementById('char-ruby').value,
+            alias: document.getElementById('char-alias').value,
+            age: document.getElementById('char-age').value,
+            birth: document.getElementById('char-birth').value,
+            role: document.getElementById('char-role').value,
+            height: document.getElementById('char-height').value,
+            looks: document.getElementById('char-looks').value,
+            skill: document.getElementById('char-skill').value,
+            history: document.getElementById('char-history').value,
+            iconUrl: iconUrl,
+            customItems: customItems,
+            updatedAt: fb.firestore.FieldValue.serverTimestamp()
+        };
+
+        const db = getDb();
+        const ref = db.collection("works").doc(state.selectedWorkId).collection("characters");
+
         if (currentCharId) {
             await ref.doc(currentCharId).update(data);
         } else {
             const snap = await ref.get();
             data.order = snap.size;
-            data.createdAt = firebase.firestore.FieldValue.serverTimestamp();
+            data.createdAt = fb.firestore.FieldValue.serverTimestamp();
             await ref.add(data);
         }
         closeCharEditor();
     } catch (error) {
         console.error('[CharEditor] 保存エラー:', error);
-        alert('保存に失敗しました。');
+        alert('保存に失敗しました。詳細はコンソールを確認してください。');
     }
 }
 
