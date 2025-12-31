@@ -5,8 +5,7 @@
 import { getDb } from '../../core/firebase.js';
 import { getState } from '../../core/state.js';
 
-let currentPlotId = null;
-let currentPlotType = 'normal';
+let timelineItems = []; // { date: "", content: "" } の配列
 
 /**
  * プロットエディタの初期化
@@ -33,6 +32,10 @@ export function initPlotEditor() {
 
     const typeTimelineBtn = document.getElementById('plot-type-timeline');
     if (typeTimelineBtn) typeTimelineBtn.addEventListener('click', () => setPlotType('timeline'));
+
+    // タイムライン追加ボタン
+    const addEntryBtn = document.getElementById('plot-timeline-add-btn');
+    if (addEntryBtn) addEntryBtn.addEventListener('click', () => addTimelineEntry());
 }
 
 /**
@@ -46,12 +49,12 @@ export async function openPlotEditor(id = null) {
     }
 
     currentPlotId = id;
+    timelineItems = [];
     document.getElementById('plot-list-view').style.display = 'none';
     document.getElementById('plot-edit-view').style.display = 'block';
 
     const titleInput = document.getElementById('plot-title');
     const contentInput = document.getElementById('plot-content');
-    const dateInput = document.getElementById('plot-date');
 
     if (id) {
         const db = getDb();
@@ -62,13 +65,12 @@ export async function openPlotEditor(id = null) {
             const data = doc.data();
             titleInput.value = data.title || "";
             contentInput.value = data.content || "";
-            dateInput.value = data.date || "";
+            timelineItems = data.timelineItems || [];
             setPlotType(data.type || 'normal');
         }
     } else {
         titleInput.value = "";
         contentInput.value = "";
-        dateInput.value = "";
         setPlotType('normal');
     }
 }
@@ -80,7 +82,80 @@ function setPlotType(type) {
     currentPlotType = type;
     document.getElementById('plot-type-normal').classList.toggle('active', type === 'normal');
     document.getElementById('plot-type-timeline').classList.toggle('active', type === 'timeline');
-    document.getElementById('plot-timeline-meta').style.display = (type === 'timeline') ? 'flex' : 'none';
+
+    // 表示切り替え
+    const basicView = document.getElementById('plot-basic-content');
+    const timelineView = document.getElementById('plot-timeline-view');
+
+    if (type === 'timeline') {
+        basicView.style.display = 'none';
+        timelineView.style.display = 'block';
+        renderTimelineEntries();
+    } else {
+        basicView.style.display = 'block';
+        timelineView.style.display = 'none';
+    }
+}
+
+/**
+ * タイムラインエントリーの追加
+ */
+function addTimelineEntry() {
+    timelineItems.push({ date: "", content: "" });
+    renderTimelineEntries();
+}
+
+/**
+ * タイムラインエントリーの描画
+ */
+function renderTimelineEntries() {
+    const list = document.getElementById('plot-timeline-list');
+    if (!list) return;
+
+    list.innerHTML = "";
+    timelineItems.forEach((item, index) => {
+        const row = document.createElement('div');
+        row.style.display = 'flex';
+        row.style.gap = '10px';
+        row.style.marginBottom = '10px';
+        row.style.alignItems = 'flex-start';
+
+        row.innerHTML = `
+            <div style="flex: 1; display:flex; flex-direction:column; gap:4px;">
+                <input type="text" class="tl-date" placeholder="日時" value="${item.date}"
+                    style="width:100%; padding:6px; background:#0a0a0a; border:1px solid #333; color:var(--clr-save); font-size:0.85rem;">
+                <textarea class="tl-content" placeholder="内容"
+                    style="width:100%; height:80px; padding:8px; background:#111; border:1px solid #444; color:#fff; font-size:0.95rem; resize:none;">${item.content}</textarea>
+            </div>
+            <div style="display:flex; flex-direction:column; gap:8px;">
+                <button class="btn-sort tl-up" style="${index === 0 ? 'opacity:0.3; cursor:default;' : ''}">▲</button>
+                <button class="btn-icon tl-del" style="background:transparent; color:var(--clr-delete); font-size:1.2rem;">×</button>
+            </div>
+        `;
+
+        // イベント紐付け
+        const dateInput = row.querySelector('.tl-date');
+        const contentInput = row.querySelector('.tl-content');
+
+        dateInput.addEventListener('input', (e) => { timelineItems[index].date = e.target.value; });
+        contentInput.addEventListener('input', (e) => { timelineItems[index].content = e.target.value; });
+
+        row.querySelector('.tl-up').addEventListener('click', () => {
+            if (index > 0) {
+                const temp = timelineItems[index];
+                timelineItems[index] = timelineItems[index - 1];
+                timelineItems[index - 1] = temp;
+                renderTimelineEntries();
+            }
+        });
+
+        row.querySelector('.tl-del').addEventListener('click', () => {
+            timelineItems.splice(index, 1);
+            renderTimelineEntries();
+        });
+
+        list.appendChild(row);
+    });
 }
 
 /**
@@ -90,7 +165,6 @@ export async function savePlot() {
     const state = getState();
     const title = document.getElementById('plot-title').value.trim();
     const content = document.getElementById('plot-content').value;
-    const date = document.getElementById('plot-date').value;
 
     if (!title) {
         alert('タイトルを入力してください。');
@@ -99,9 +173,9 @@ export async function savePlot() {
 
     const data = {
         title: title,
-        content: content,
+        content: currentPlotType === 'timeline' ? "" : content,
         type: currentPlotType,
-        date: currentPlotType === 'timeline' ? date : "",
+        timelineItems: currentPlotType === 'timeline' ? timelineItems : [],
         updatedAt: firebase.firestore.FieldValue.serverTimestamp()
     };
 
