@@ -170,7 +170,7 @@ function renderTimelineEntries() {
 
         row.innerHTML = `
             <input type="text" class="tl-date" placeholder="日時" value="${item.date}"
-                style="width:60px; padding:6px; background:#0a0a0a; border:1px solid #333; color:var(--clr-save); font-size:0.85rem; align-self: stretch;">
+                style="width:60px; padding:6px; background:#0a0a0a; border:1px solid #333; color:var(--clr-save); font-size:0.85rem;">
             <textarea class="tl-content" placeholder="内容"
                 style="flex: 1; height:40px; padding:8px; background:#111; border:1px solid #444; color:#fff; font-size:0.95rem; resize:none; overflow-y:hidden;">${item.content}</textarea>
             <div style="display:flex; gap:4px; align-items: center;">
