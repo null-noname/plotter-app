@@ -290,7 +290,7 @@ textarea:focus {
 
 .work-card h3 {
     font-size: 1.3rem;
-    color: var(--clr-save);
+    color: #fff;
 }
 
 .work-card .work-meta {
@@ -362,7 +362,4 @@ textarea:focus {
         padding: 12px;
     }
 
-    .work-grid {
-        grid-template-columns: 1fr;
-    }
 }

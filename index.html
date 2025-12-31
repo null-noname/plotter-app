@@ -63,15 +63,15 @@
                             <button id="new-work-btn" class="btn-retro add"
                                 style="padding:6px 24px; font-size:1rem;">＋新規作成</button>
                         </div>
-                        <!-- Row 3: ソート (右寄せ) -->
-                        <div style="display:flex; justify-content:flex-end; align-items:center; gap:8px;">
-                            <label style="font-size:0.75rem; color:#666;">並び替え:</label>
+                        <!-- Row 3: ソート (小さく右寄せ) -->
+                        <div style="display:flex; justify-content:flex-end; align-items:center; gap:6px;">
+                            <label style="font-size:0.7rem; opacity:0.6; color:#fff;">並び替え:</label>
                             <select id="work-sort-order" class="select-retro"
-                                style="font-size:0.85rem; padding:4px 8px; background:#111; color:#fff;">
-                                <option value="updatedAt_desc">更新日（新）</option>
-                                <option value="updatedAt_asc">更新日（古）</option>
-                                <option value="createdAt_desc">作成日（新）</option>
-                                <option value="createdAt_asc">作成日（古）</option>
+                                style="font-size:0.7rem; padding:2px 6px; background:#111; color:#fff; border:none; border-radius:4px; cursor:pointer;">
+                                <option value="updatedAt_desc">更新順</option>
+                                <option value="updatedAt_asc">更新（旧）</option>
+                                <option value="createdAt_desc">作成順</option>
+                                <option value="createdAt_asc">作成（旧）</option>
                             </select>
                         </div>
                     </div>
