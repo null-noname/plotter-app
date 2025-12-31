@@ -5,6 +5,8 @@
 import { getDb } from '../../core/firebase.js';
 import { getState } from '../../core/state.js';
 
+let currentPlotId = null;
+let currentPlotType = 'normal';
 let timelineItems = []; // { date: "", content: "" } の配列
 
 /**
