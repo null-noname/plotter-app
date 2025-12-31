@@ -13,6 +13,7 @@ let pendingIconFile = null;
  * 登場人物エディタの初期化
  */
 export function initCharEditor() {
+    console.log('[CharEditor] 初期化開始...');
     // グローバルブリッジの登録
     window.plotter_openCharEditor = openCharEditor;
     window.plotter_openCharView = openCharView;
@@ -21,7 +22,12 @@ export function initCharEditor() {
 
     // イベントリスナーの登録
     const saveBtn = document.getElementById('char-save-btn');
-    if (saveBtn) saveBtn.addEventListener('click', saveCharacter);
+    if (saveBtn) {
+        console.log('[CharEditor] 保存ボタンを検出。イベントを登録します。');
+        saveBtn.addEventListener('click', saveCharacter);
+    } else {
+        console.warn('[CharEditor] 保存ボタン (char-save-btn) が見つかりません。');
+    }
 
     const backBtn = document.getElementById('char-edit-back');
     if (backBtn) backBtn.addEventListener('click', closeCharEditor);
@@ -197,11 +203,21 @@ export function addCharCustomItem(label = "", value = "") {
     const container = document.getElementById('char-custom-items');
     const div = document.createElement('div');
     div.className = 'char-memo-item';
-    div.style.marginBottom = '12px';
     div.innerHTML = `
-        <input type="text" class="custom-label gold-bold" value="${label}" placeholder="項目名" style="width:100%; font-size:0.75rem; color:#fff; background:transparent; border:none; border-bottom:1px solid #333; margin-bottom:4px; font-weight:bold;">
+        <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #333; margin-bottom:4px;">
+            <input type="text" class="custom-label gold-bold" value="${label}" placeholder="項目名" style="flex:1; font-size:0.75rem; color:#fff; background:transparent; border:none; padding:4px 0; font-weight:bold;">
+            <button class="btn-delete-item" style="background:transparent; color:var(--clr-delete); border:none; cursor:pointer; font-size:0.8rem; padding:4px;">✕削除</button>
+        </div>
         <textarea class="custom-value" style="width:100%; height:60px; padding:8px; background:#111; border:1px solid #444; color:#fff; resize:none;">${value}</textarea>
     `;
+
+    // 削除ボタンのイベント
+    div.querySelector('.btn-delete-item').addEventListener('click', () => {
+        if (confirm("この項目を削除しますか？")) {
+            div.remove();
+        }
+    });
+
     container.appendChild(div);
 }
 
@@ -209,8 +225,12 @@ export function addCharCustomItem(label = "", value = "") {
  * 保存処理
  */
 export async function saveCharacter() {
+    console.log('[CharEditor] 保存開始...');
     const state = getState();
-    if (!state.selectedWorkId) return;
+    if (!state.selectedWorkId) {
+        console.warn('[CharEditor] 作品IDがありません');
+        return;
+    }
 
     try {
         let iconUrl = null;
@@ -221,7 +241,6 @@ export async function saveCharacter() {
             await ref.put(pendingIconFile);
             iconUrl = await ref.getDownloadURL();
         } else if (currentCharId) {
-            // 保存済みのURLを維持
             const db = getDb();
             const doc = await db.collection("works").doc(state.selectedWorkId)
                 .collection("characters").doc(currentCharId).get();
@@ -230,31 +249,43 @@ export async function saveCharacter() {
 
         const customItems = [];
         document.querySelectorAll('#char-custom-items .char-memo-item').forEach(div => {
-            customItems.push({
-                label: div.querySelector('.custom-label').value,
-                value: div.querySelector('.custom-value').value
-            });
+            const labelEl = div.querySelector('.custom-label');
+            const valueEl = div.querySelector('.custom-value');
+            if (labelEl && valueEl) {
+                customItems.push({
+                    label: labelEl.value,
+                    value: valueEl.value
+                });
+            }
         });
 
-        // window.firebase を使用して確実にグローバルを参照
-        const fb = window.firebase;
+        const getVal = (id) => {
+            const el = document.getElementById(id);
+            return el ? el.value : "";
+        };
+
+        const fb = window.firebase || firebase;
+        if (!fb) throw new Error('Firebase SDK not found');
+
         const data = {
-            lastName: document.getElementById('char-last-name').value.trim() || "(名字未入力)",
-            firstName: document.getElementById('char-first-name').value.trim() || "",
-            lastNameRuby: document.getElementById('char-last-ruby').value.trim(),
-            firstNameRuby: document.getElementById('char-first-ruby').value.trim(),
-            alias: document.getElementById('char-alias').value,
-            age: document.getElementById('char-age').value,
-            birth: document.getElementById('char-birth').value,
-            role: document.getElementById('char-role').value,
-            height: document.getElementById('char-height').value,
-            looks: document.getElementById('char-looks').value,
-            skill: document.getElementById('char-skill').value,
-            history: document.getElementById('char-history').value,
+            lastName: getVal('char-last-name').trim() || "(名字未入力)",
+            firstName: getVal('char-first-name').trim(),
+            lastNameRuby: getVal('char-last-ruby').trim(),
+            firstNameRuby: getVal('char-first-ruby').trim(),
+            alias: getVal('char-alias'),
+            age: getVal('char-age'),
+            birth: getVal('char-birth'),
+            role: getVal('char-role'),
+            height: getVal('char-height'),
+            looks: getVal('char-looks'),
+            skill: getVal('char-skill'),
+            history: getVal('char-history'),
             iconUrl: iconUrl,
             customItems: customItems,
             updatedAt: fb.firestore.FieldValue.serverTimestamp()
         };
+
+        console.log('[CharEditor] 保存データ:', data);
 
         const db = getDb();
         const ref = db.collection("works").doc(state.selectedWorkId).collection("characters");
@@ -268,10 +299,12 @@ export async function saveCharacter() {
             const newDoc = await ref.add(data);
             currentCharId = newDoc.id;
         }
+
+        console.log('[CharEditor] 保存成功:', currentCharId);
         openCharView(currentCharId);
     } catch (error) {
         console.error('[CharEditor] 保存エラー:', error);
-        alert('保存に失敗しました。詳細はコンソールを確認してください。');
+        alert('保存に失敗しました。エラー内容はコンソールを確認してください。');
     }
 }
 
