@@ -2,9 +2,9 @@
  * char-editor.js - 登場人物の編集・保存・操作の管理
  */
 
-import { getDb, getStorage, getAuth } from '../../core/firebase.js';
+import { getDb, getAuth } from '../../core/firebase.js';
 import { getState } from '../../core/state.js';
-import { escapeHtml } from '../../utils/dom-utils.js';
+import { escapeHtml, resizeImageToBase64 } from '../../utils/dom-utils.js';
 
 let currentCharId = null;
 let pendingIconFile = null;
@@ -241,14 +241,19 @@ export async function saveCharacter() {
 
     try {
         let iconUrl = currentIconUrl;
+
+        // Base64方式に変更: 画像がある場合はリサイズしてデータURLを取得
         if (pendingIconFile) {
-            console.log('[CharEditor] 画像アップロード開始:', pendingIconFile.name);
-            const storage = getStorage();
-            const path = `characters/${state.currentUser.uid}/${Date.now()}_${pendingIconFile.name}`;
-            const ref = storage.ref().child(path);
-            await ref.put(pendingIconFile);
-            iconUrl = await ref.getDownloadURL();
-            console.log('[CharEditor] 画像アップロード完了:', iconUrl);
+            console.log('[CharEditor] 画像変換開始:', pendingIconFile.name);
+            try {
+                // 300x300以内、jpeg品質0.7に変換して容量を削減
+                iconUrl = await resizeImageToBase64(pendingIconFile, 300, 300, 0.7);
+                console.log('[CharEditor] 画像変換完了 (Base64形式)');
+            } catch (err) {
+                console.error('[CharEditor] 画像変換失敗:', err);
+                const msg = "画像の変換に失敗しました。画像なしでテキスト情報のみ保存しますか？";
+                if (!confirm(msg)) return;
+            }
         }
 
         const customItems = [];
