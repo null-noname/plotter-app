@@ -137,7 +137,7 @@ function renderWorkView(container, data) {
         violent: "暴力",
         cruel: "残酷"
     };
-    const activeRatings = (data.rating || []).map(r => ratings[r] || r).join(' / ');
+    const activeRatings = (data.rating || []).map(r => ratings[r] || r).join('/');
 
     const statusLabels = {
         "in-progress": "制作中",
@@ -157,22 +157,26 @@ function renderWorkView(container, data) {
         <div class="card-retro">
             <h3 style="color:#fff; font-size:1.6rem; margin-bottom:15px;">${escapeHtml(data.title || "無題")}</h3>
             
-            <label class="gold-bold" style="font-size:0.8rem; opacity:0.7;">キャッチコピー</label>
-            <div style="color:#fff; font-weight:bold; margin-bottom:15px; font-size:1.1rem;">${escapeHtml(data.catchphrase || "（未設定）")}</div>
+            <label class="gold-bold" style="font-size:0.8rem; opacity:0.7; margin-bottom:2px;">キャッチコピー</label>
+            <div style="color:#fff; margin-bottom:15px; font-size:1.1rem;">${escapeHtml(data.catchphrase || "（未設定）")}</div>
             
-            <label class="gold-bold" style="font-size:0.8rem; opacity:0.7;">あらすじ・概要</label>
-            <div style="margin-bottom:20px; color:#ddd; white-space:pre-wrap; line-height:1.7; font-size:1.1rem; padding:15px; background:rgba(255,255,255,0.05); border-radius:4px;">${escapeHtml(data.description || "あらすじ未入力")}</div>
+            <label class="gold-bold" style="font-size:0.8rem; opacity:0.7; margin-bottom:2px;">あらすじ</label>
+            <div style="color:#fff; white-space:pre-wrap; line-height:1.7; font-size:1.1rem; margin-bottom:20px;">${escapeHtml(data.description || "あらすじ未入力")}</div>
 
-            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:15px; font-size:0.9rem; color:#aaa;">
-                <div><span class="gold-bold">状態:</span> <span style="color:#fff;">${statusLabel}</span></div>
-                <div><span class="gold-bold">種別:</span> <span style="color:#fff;">${data.type === 'derivative' ? '二次創作' : 'オリジナル'}</span></div>
-                <div><span class="gold-bold">長さ:</span> <span style="color:#fff;">${data.length === 'short' ? '短編' : '長編'}</span></div>
-                <div><span class="gold-bold">AI利用:</span> <span style="color:#fff;">${aiLabels[data.ai] || "なし"}</span></div>
+            <div style="border-top:1px solid #444; padding-top:15px; font-size:0.95rem; line-height:1.8; color:#fff;">
+                <div>
+                    <span class="gold-bold" style="display:inline;">状態：</span>${statusLabel}　
+                    <span class="gold-bold" style="display:inline;">種別：</span>${data.type === 'derivative' ? '二次創作' : 'オリジナル'}
+                </div>
+                <div>
+                    <span class="gold-bold" style="display:inline;">長さ：</span>${data.length === 'short' ? '短編' : '長編'}　
+                    <span class="gold-bold" style="display:inline;">AI利用：</span>${aiLabels[data.ai] || "なし"}
+                </div>
+                ${activeRatings ? `
+                <div style="margin-top:5px;">
+                    <span class="gold-bold" style="display:inline;">レーティング：</span>${activeRatings}
+                </div>` : ''}
             </div>
-            ${activeRatings ? `
-            <div style="margin-top:15px; font-size:0.9rem;">
-                <span class="gold-bold">レーティング:</span> <span style="color:var(--clr-delete);">${activeRatings}</span>
-            </div>` : ''}
         </div>
     `;
 }
