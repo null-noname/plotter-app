@@ -145,7 +145,7 @@ function createMemoCard(memo) {
             <div style="display:flex; flex-direction:column; gap:8px; margin-left:16px;">
                 <button class="btn-sort btn-up">▲</button>
                 <button class="btn-sort btn-down">▼</button>
-                <button class="btn-icon btn-delete" style="background:transparent; color:var(--clr-delete); font-size:1.2rem; margin-top:10px;">🗑</button>
+                <button class="btn-icon btn-delete" style="background:transparent; color:var(--clr-delete); font-size:1.2rem; margin-top:10px; border:none; cursor:pointer; font-weight:bold;">×</button>
             </div>
         </div>
     `;

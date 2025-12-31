@@ -89,7 +89,7 @@ function createPlotCard(plot) {
             <div style="display:flex; align-items:center; gap:8px; margin-left:12px;">
                 <button class="btn-sort btn-up">▲</button>
                 <button class="btn-sort btn-down">▼</button>
-                <button class="btn-icon btn-delete" style="background:transparent; color:var(--clr-delete); font-size:1.1rem; padding: 4px;">🗑</button>
+                <button class="btn-icon btn-delete" style="background:transparent; color:var(--clr-delete); font-size:1.2rem; padding: 4px; border:none; cursor:pointer; font-weight:bold;">×</button>
             </div>
         </div>
     `;
