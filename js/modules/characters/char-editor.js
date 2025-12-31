@@ -110,8 +110,8 @@ export async function openCharView(id) {
         .filter(m => m.value)
         .map(m => `
             <div>
-                <label class="gold-bold" style="font-size:0.8rem; display:block; margin-bottom:5px;">${m.label}</label>
-                <div style="color:#ddd; white-space:pre-wrap; line-height:1.6; padding-left:10px; border-left:2px solid #444;">${escapeHtml(m.value)}</div>
+                <label class="gold-bold" style="font-size:0.8rem; opacity:0.7; display:block; margin-bottom:2px;">${m.label}</label>
+                <div style="color:#fff; white-space:pre-wrap; line-height:1.6; font-size:1.1rem;">${escapeHtml(m.value)}</div>
             </div>
         `).join('');
 }

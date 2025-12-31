@@ -248,8 +248,7 @@
                             </div>
                             <!-- Name & Stats Grid -->
                             <div style="flex:1; display:flex; flex-direction:column; gap:12px;">
-                                <div
-                                    style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; border-bottom:1px solid #444; padding-bottom:10px;">
+                                <div style="display:flex; gap:2em; border-bottom:1px solid #444; padding-bottom:10px;">
                                     <div>
                                         <div id="char-view-last-ruby"
                                             style="font-size:0.75rem; color:rgba(255,255,255,0.8);"></div>
@@ -264,31 +263,26 @@
                                     </div>
                                 </div>
                                 <div
-                                    style="padding-bottom:8px; border-bottom:1px solid #444; display:flex; gap:8px; align-items:center;">
-                                    <label class="gold-bold" style="font-size:0.85rem; flex-shrink:0;">別名：</label>
-                                    <div id="char-view-alias" style="color:#fff; font-size:1.1rem; font-weight:bold;">
+                                    style="display:flex; flex-direction:column; gap:8px; border-bottom:1px solid #444; padding-bottom:12px; color:#fff; font-size:0.95rem;">
+                                    <div>
+                                        <span class="gold-bold" style="font-size:0.8rem; opacity:0.7;">別名：</span>
+                                        <span id="char-view-alias" style="font-weight:bold; font-size:1.1rem;"></span>
                                     </div>
-                                </div>
-                                <div
-                                    style="padding-bottom:8px; border-bottom:1px solid #333; display:grid; grid-template-columns: 1fr 1fr; gap:10px; align-items:center;">
-                                    <div style="display:flex; gap:8px; align-items:center;">
-                                        <label class="gold-bold" style="font-size:0.85rem; flex-shrink:0;">誕生日：</label>
-                                        <div id="char-view-birth" style="color:#fff;"></div>
+                                    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+                                        <div><span class="gold-bold"
+                                                style="font-size:0.8rem; opacity:0.7;">誕生日：</span><span
+                                                id="char-view-birth"></span></div>
+                                        <div><span class="gold-bold"
+                                                style="font-size:0.8rem; opacity:0.7;">年齢：</span><span
+                                                id="char-view-age"></span></div>
                                     </div>
-                                    <div style="display:flex; gap:8px; align-items:center;">
-                                        <label class="gold-bold" style="font-size:0.85rem; flex-shrink:0;">年齢：</label>
-                                        <div id="char-view-age" style="color:#fff;"></div>
-                                    </div>
-                                </div>
-                                <div
-                                    style="padding-bottom:8px; border-bottom:1px solid #333; display:grid; grid-template-columns: 1fr 1fr; gap:10px; align-items:center;">
-                                    <div style="display:flex; gap:8px; align-items:center;">
-                                        <label class="gold-bold" style="font-size:0.85rem; flex-shrink:0;">役職：</label>
-                                        <div id="char-view-role" style="color:#fff;"></div>
-                                    </div>
-                                    <div style="display:flex; gap:8px; align-items:center;">
-                                        <label class="gold-bold" style="font-size:0.85rem; flex-shrink:0;">身長：</label>
-                                        <div id="char-view-height" style="color:#fff;"></div>
+                                    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+                                        <div><span class="gold-bold"
+                                                style="font-size:0.8rem; opacity:0.7;">役職：</span><span
+                                                id="char-view-role"></span></div>
+                                        <div><span class="gold-bold"
+                                                style="font-size:0.8rem; opacity:0.7;">身長：</span><span
+                                                id="char-view-height"></span></div>
                                     </div>
                                 </div>
                             </div>
