@@ -212,7 +212,7 @@ export function addCharCustomItem(label = "", value = "") {
     div.innerHTML = `
         <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #333; margin-bottom:4px;">
             <input type="text" class="custom-label gold-bold" value="${label}" placeholder="項目名" style="flex:1; font-size:0.75rem; color:#fff; background:transparent; border:none; padding:4px 0; font-weight:bold;">
-            <button class="btn-delete-item" style="background:transparent; color:var(--clr-delete); border:none; cursor:pointer; font-size:0.8rem; padding:4px;">✕削除</button>
+            <button class="btn-delete-item" style="background:var(--clr-delete); color:#fff; width:22px; height:22px; border-radius:4px; display:flex; align-items:center; justify-content:center; border:none; cursor:pointer; font-weight:bold; font-size:1rem; padding:0;">×</button>
         </div>
         <textarea class="custom-value" style="width:100%; height:60px; padding:8px; background:#111; border:1px solid #444; color:#fff; resize:none;">${value}</textarea>
     `;

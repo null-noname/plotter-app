@@ -189,7 +189,7 @@ function renderTimelineEntries() {
                 style="flex: 1; height:40px; padding:8px; background:#111; border:1px solid #444; color:#fff; font-size:0.95rem; resize:none; overflow-y:hidden;">${item.content}</textarea>
             <div style="display:flex; gap:4px; align-items: center;">
                 <button class="btn-sort tl-up" style="${index === 0 ? 'opacity:0.3; cursor:default;' : ''}">▲</button>
-                <button class="btn-icon tl-del" style="background:transparent; color:var(--clr-delete); font-size:1.5rem; padding: 0 4px; line-height: 1;">×</button>
+                <button class="btn-icon tl-del" style="background:var(--clr-delete); color:#fff; width:24px; height:24px; border-radius:4px; display:flex; align-items:center; justify-content:center; border:none; cursor:pointer; font-weight:bold; font-size:1.1rem; padding: 0;">×</button>
             </div>
         `;
 

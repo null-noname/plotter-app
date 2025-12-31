@@ -103,7 +103,7 @@ function createCharCard(char) {
         <div style="display:flex; gap:6px;">
             <button class="btn-sort btn-up">▲</button>
             <button class="btn-sort btn-down">▼</button>
-            <button class="btn-icon btn-delete" style="background:transparent; color:var(--clr-delete); font-size:1.2rem; border:none; cursor:pointer; font-weight:bold;">×</button>
+            <button class="btn-icon btn-delete" style="background:var(--clr-delete); color:#fff; width:28px; height:28px; border-radius:6px; display:flex; align-items:center; justify-content:center; border:none; cursor:pointer; font-weight:bold; font-size:1.2rem;">×</button>
         </div>
     `;
 
