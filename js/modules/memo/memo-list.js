@@ -146,13 +146,13 @@ function createMemoCard(memo) {
     card.innerHTML = `
         <div class="collapsible-header" style="padding: 12px; display:flex; justify-content:space-between; align-items:center; background: #1a1a1a; border-radius: 8px 8px 0 0; min-height:50px;">
             <div class="header-click-area" style="flex:1; cursor:pointer; display:flex; align-items:center; gap:8px; min-width:0;">
-                <span class="toggle-icon gold-bold" style="width:1.2rem; font-size:1.2rem; display:flex; justify-content:center;">＋</span>
                 <h3 style="font-size:1.1rem; color:#fff; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; flex:1; margin:0;">${escapeHtml(memo.title || "無題")}</h3>
             </div>
             <div style="display:flex; align-items:center; gap:8px; margin-left:12px;">
                 <button class="btn-retro btn-delete" style="background:var(--clr-delete); font-size:0.75rem; padding:4px 8px; border-radius:4px;">削除</button>
                 <button class="btn-retro btn-edit blue" style="font-size:0.75rem; padding:4px 8px; border-radius:4px;">編集</button>
                 <button class="btn-sort btn-up" style="padding:4px 8px;">▲</button>
+                <span class="toggle-icon gold-bold" style="width:1.2rem; font-size:1.2rem; display:flex; justify-content:center; cursor:pointer; color:var(--clr-save);">＋</span>
             </div>
         </div>
         <div class="collapsible-content summary-mode" style="padding: 12px; background: #0a0a0a; border-radius: 0 0 8px 8px; cursor:pointer; border-top:1px solid #222;">

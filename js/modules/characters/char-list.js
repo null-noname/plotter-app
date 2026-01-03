@@ -100,10 +100,10 @@ function createCharCard(char) {
             <div style="font-size:0.75rem; color:rgba(255,255,255,0.7);">${escapeHtml(fullRuby)}</div>
             <h3 style="font-size:1.1rem; color:#fff;">${escapeHtml(fullName)}</h3>
         </div>
-        <div style="display:flex; gap:6px;">
-            <button class="btn-sort btn-up">▲</button>
-            <button class="btn-sort btn-down">▼</button>
-            <button class="btn-icon btn-delete" style="background:var(--clr-delete); color:#fff; width:28px; height:28px; border-radius:6px; display:flex; align-items:center; justify-content:center; border:none; cursor:pointer; font-weight:bold; font-size:1.2rem;">×</button>
+        <div style="display:flex; gap:8px; align-items:center;">
+            <button class="btn-retro btn-delete" style="background:var(--clr-delete); font-size:0.75rem; padding:4px 8px; border-radius:4px;">削除</button>
+            <button class="btn-sort btn-up" style="padding:4px 8px;">▲</button>
+            <button class="btn-sort btn-down" style="padding:4px 8px;">▼</button>
         </div>
     `;
 
