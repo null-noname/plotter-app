@@ -131,12 +131,17 @@ function createPlotCard(plot) {
         }
     };
 
-    card.querySelector('.header-click-area').addEventListener('click', toggle);
-    card.querySelector('.collapsible-content').addEventListener('click', toggle);
+    card.querySelector('.collapsible-header').addEventListener('click', toggle);
+    card.querySelector('.collapsible-content').addEventListener('click', (e) => {
+        // コンテンツ内のクリックでも、サマリーモード時のみトグルの対象にする
+        if (card.classList.contains('collapsed')) {
+            toggle();
+        }
+    });
 
     card.querySelector('.btn-edit').addEventListener('click', (e) => {
         e.stopPropagation();
-        openPlotEditor(plot.id);
+        if (window.plotter_openPlotEditor) window.plotter_openPlotEditor(plot.id);
     });
 
     card.querySelector('.btn-up').addEventListener('click', (e) => {

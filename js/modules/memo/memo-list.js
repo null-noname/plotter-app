@@ -181,12 +181,15 @@ function createMemoCard(memo) {
         }
     };
 
-    card.querySelector('.header-click-area').addEventListener('click', toggle);
-    card.querySelector('.collapsible-content').addEventListener('click', toggle);
+    card.querySelector('.collapsible-header').addEventListener('click', toggle);
+    card.querySelector('.collapsible-content').addEventListener('click', (e) => {
+        if (card.classList.contains('collapsed')) {
+            toggle();
+        }
+    });
 
     card.querySelector('.btn-edit').addEventListener('click', (e) => {
         e.stopPropagation();
-        const { openMemoEditor } = require('./memo-editor.js'); // Use internal if needed or assume global bridge
         if (window.plotter_openMemoEditor) window.plotter_openMemoEditor(memo.id);
     });
 
