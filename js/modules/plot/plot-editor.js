@@ -4,6 +4,7 @@
 
 import { getDb } from '../../core/firebase.js';
 import { getState } from '../../core/state.js';
+import { autoResizeTextarea } from '../../utils/dom-utils.js';
 
 let currentPlotId = null;
 let currentPlotType = 'normal';
@@ -34,6 +35,11 @@ export function initPlotEditor() {
 
     const addEntryBtn = document.getElementById('plot-timeline-add-btn');
     if (addEntryBtn) addEntryBtn.addEventListener('click', () => addTimelineEntry());
+
+    const contentInput = document.getElementById('plot-content');
+    if (contentInput) {
+        contentInput.addEventListener('input', (e) => autoResizeTextarea(e.target));
+    }
 
     // 閲覧画面：イベントリスナーの登録
     const viewBackBtn = document.getElementById('plot-view-back');
@@ -74,9 +80,13 @@ export async function openPlotView(id) {
         if (basicViewArea) basicViewArea.style.display = 'none';
         timelineView.style.display = 'block';
         timelineList.innerHTML = (data.timelineItems || []).map(item => `
-            <div style="display:flex; gap:12px; margin-bottom:15px; border-bottom:1px solid #333; padding-bottom:10px;">
-                <div style="color:var(--clr-save); font-size:0.9rem; min-width:60px; font-weight:bold;">${item.date || "-"}</div>
-                <div style="flex:1; color:#ddd; white-space:pre-wrap;">${item.content || ""}</div>
+            <div class="collapsible-container collapsed">
+                <div class="collapsible-header" onclick="this.parentElement.classList.toggle('collapsed')">
+                    <div style="color:var(--clr-save); font-size:0.9rem; font-weight:bold;">${item.date || "日時未設定"}</div>
+                </div>
+                <div class="collapsible-content">
+                    <div style="color:#ddd; white-space:pre-wrap; font-size:1.05rem;">${item.content || ""}</div>
+                </div>
             </div>
         `).join('');
     } else {
@@ -121,11 +131,14 @@ export async function openPlotEditor(id = null) {
             contentInput.value = data.content || "";
             timelineItems = data.timelineItems || [];
             setPlotType(data.type || 'normal');
+            // 高さを調整
+            setTimeout(() => autoResizeTextarea(contentInput), 0);
         }
     } else {
         titleInput.value = "";
         contentInput.value = "";
         setPlotType('normal');
+        autoResizeTextarea(contentInput);
     }
 }
 
@@ -189,19 +202,14 @@ function renderTimelineEntries() {
         const dateInput = row.querySelector('.tl-date');
         const contentInput = row.querySelector('.tl-content');
 
-        const autoResize = (el) => {
-            el.style.height = '40px';
-            el.style.height = (el.scrollHeight) + 'px';
-        };
-
         dateInput.addEventListener('input', (e) => { timelineItems[index].date = e.target.value; });
         contentInput.addEventListener('input', (e) => {
             timelineItems[index].content = e.target.value;
-            autoResize(e.target);
+            autoResizeTextarea(e.target);
         });
 
         // 初期化時のリサイズ
-        setTimeout(() => autoResize(contentInput), 0);
+        setTimeout(() => autoResizeTextarea(contentInput), 0);
 
         row.querySelector('.tl-up').addEventListener('click', () => {
             if (index > 0) {

@@ -4,7 +4,7 @@
 
 import { getDb, getAuth } from '../../core/firebase.js';
 import { getState } from '../../core/state.js';
-import { escapeHtml, resizeImageToBase64 } from '../../utils/dom-utils.js';
+import { escapeHtml, resizeImageToBase64, autoResizeTextarea } from '../../utils/dom-utils.js';
 
 let currentCharId = null;
 let pendingIconFile = null;
@@ -45,6 +45,12 @@ export function initCharEditor() {
     if (addItemBtn) {
         addItemBtn.addEventListener('click', () => addCharCustomItem());
     }
+
+    // メモ項目の自動リサイズ登録
+    ['char-looks', 'char-skill', 'char-history'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.addEventListener('input', (e) => autoResizeTextarea(e.target));
+    });
 
     // 閲覧モード用ボタン
     const viewBackBtn = document.getElementById('char-view-back');
@@ -109,9 +115,13 @@ export async function openCharView(id) {
     memosContainer.innerHTML = memoItems
         .filter(m => m.value)
         .map(m => `
-            <div>
-                <label class="gold-bold" style="font-size:0.8rem; opacity:0.7; display:block; margin-bottom:2px;">${m.label}</label>
-                <div style="color:#fff; white-space:pre-wrap; line-height:1.6; font-size:1.1rem;">${escapeHtml(m.value)}</div>
+            <div class="collapsible-container collapsed">
+                <div class="collapsible-header" onclick="this.parentElement.classList.toggle('collapsed')">
+                    <div class="gold-bold" style="font-size:0.8rem; margin-bottom:0;">${m.label}</div>
+                </div>
+                <div class="collapsible-content">
+                    <div style="color:#fff; white-space:pre-wrap; line-height:1.6; font-size:1.1rem;">${escapeHtml(m.value)}</div>
+                </div>
             </div>
         `).join('');
 }
@@ -142,6 +152,13 @@ export async function openCharEditor(id = null) {
             const data = doc.data();
             currentIconUrl = data.iconUrl;
             fillFields(data);
+            // 内容に合わせて高さを調整
+            setTimeout(() => {
+                ['char-looks', 'char-skill', 'char-history'].forEach(id => {
+                    const el = document.getElementById(id);
+                    if (el) autoResizeTextarea(el);
+                });
+            }, 0);
         } else {
             currentIconUrl = null;
         }
@@ -214,8 +231,12 @@ export function addCharCustomItem(label = "", value = "") {
             <input type="text" class="custom-label gold-bold" value="${label}" placeholder="項目名" style="flex:1; font-size:0.75rem; color:#fff; background:transparent; border:none; padding:4px 0; font-weight:bold;">
             <button class="btn-delete-item" style="background:var(--clr-delete); color:#fff; width:22px; height:22px; border-radius:4px; display:flex; align-items:center; justify-content:center; border:none; cursor:pointer; font-weight:bold; font-size:1rem; padding:0;">×</button>
         </div>
-        <textarea class="custom-value" style="width:100%; height:60px; padding:8px; background:#111; border:1px solid #444; color:#fff; resize:none;">${value}</textarea>
+        <textarea class="custom-value auto-resize" style="width:100%; height:60px; padding:8px; background:#111; border:1px solid #444; color:#fff; resize:none;">${value}</textarea>
     `;
+
+    const textarea = div.querySelector('.custom-value');
+    textarea.addEventListener('input', (e) => autoResizeTextarea(e.target));
+    setTimeout(() => autoResizeTextarea(textarea), 0);
 
     // 削除ボタンのイベント
     div.querySelector('.btn-delete-item').addEventListener('click', () => {

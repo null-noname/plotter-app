@@ -101,3 +101,12 @@ export function resizeImageToBase64(file, maxWidth = 300, maxHeight = 300, quali
         reader.onerror = reject;
     });
 }
+
+/**
+ * テキストエリアの高さを内容に合わせて自動調整します。
+ */
+export function autoResizeTextarea(el) {
+    if (!el) return;
+    el.style.height = 'auto'; // 一旦リセット
+    el.style.height = el.scrollHeight + 'px';
+}

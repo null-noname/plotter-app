@@ -363,3 +363,66 @@ textarea:focus {
     }
 
 }
+
+/* --- Collapsible Sections --- */
+.collapsible-container {
+    border: 1px solid #333;
+    border-radius: 8px;
+    margin-bottom: 15px;
+    background: #1a1a1a;
+    overflow: hidden;
+}
+
+.collapsible-header {
+    background: #252525;
+    padding: 10px 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    user-select: none;
+}
+
+.collapsible-header:hover {
+    background: #333;
+}
+
+.collapsible-toggle {
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: var(--clr-save);
+    width: 24px;
+    text-align: center;
+}
+
+.collapsible-header::after {
+    content: '－';
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: var(--clr-save);
+}
+
+.collapsible-container.collapsed .collapsible-header::after {
+    content: '＋';
+}
+
+.collapsible-content {
+    padding: 15px;
+    border-top: 1px solid #333;
+}
+
+/* State: Collapsed */
+.collapsible-container.collapsed .collapsible-content {
+    display: none;
+}
+
+.collapsible-container.collapsed .collapsible-header {
+    border-bottom: none;
+}
+
+/* Auto-resize Textarea */
+textarea.auto-resize {
+    overflow-y: hidden;
+    resize: none;
+    min-height: 40px;
+}
