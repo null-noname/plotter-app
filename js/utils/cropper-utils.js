@@ -17,13 +17,12 @@ export function openCropper(file) {
 }
 
 function showCropperModal(img, resolve, reject) {
-    // モーダルの作成
     const modal = document.createElement('div');
     modal.style.cssText = `
         position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-        background: rgba(0,0,0,0.9); z-index: 9999;
+        background: rgba(0,0,0,0.95); z-index: 9999;
         display: flex; flex-direction: column; align-items: center; justify-content: center;
-        touch-action: none;
+        touch-action: none; font-family: sans-serif;
     `;
 
     const title = document.createElement('div');
@@ -34,33 +33,75 @@ function showCropperModal(img, resolve, reject) {
     const container = document.createElement('div');
     container.style.cssText = `
         position: relative; width: 300px; height: 300px;
-        overflow: hidden; border: 2px solid #555; background: #111;
+        overflow: hidden; border: 2px solid var(--clr-save); background: #000;
+        box-shadow: 0 0 20px rgba(0,0,0,0.5);
     `;
     modal.appendChild(container);
 
     const canvas = document.createElement('canvas');
+    canvas.width = 300;
+    canvas.height = 300;
     const ctx = canvas.getContext('2d');
     container.appendChild(canvas);
 
-    // 画像の初期配置
-    let scale = 1.0;
+    // 画像の初期状態計算
     let imgW = img.width;
     let imgH = img.height;
+    const baseScale = Math.max(300 / imgW, 300 / imgH); // 枠を埋める最小倍率
+    let currentZoom = 1.0; // 1.0 = baseScale
 
-    // 枠(300x300)に収まるように初期スケール設定
-    const minScale = Math.max(300 / imgW, 300 / imgH);
-    scale = minScale;
-
-    let posX = (300 - imgW * scale) / 2;
-    let posY = (300 - imgH * scale) / 2;
+    let posX = (300 - imgW * baseScale) / 2;
+    let posY = (300 - imgH * baseScale) / 2;
 
     const draw = () => {
-        canvas.width = 300;
-        canvas.height = 300;
+        const scale = baseScale * currentZoom;
         ctx.clearRect(0, 0, 300, 300);
+
+        // 境界制限（隙間ができないように）
+        const maxPosX = 0;
+        const minPosX = 300 - (imgW * scale);
+        const maxPosY = 0;
+        const minPosY = 300 - (imgH * scale);
+
+        posX = Math.min(maxPosX, Math.max(minPosX, posX));
+        posY = Math.min(maxPosY, Math.max(minPosY, posY));
+
         ctx.drawImage(img, posX, posY, imgW * scale, imgH * scale);
     };
     draw();
+
+    // ズームスライダー
+    const zoomContainer = document.createElement('div');
+    zoomContainer.style.cssText = "margin-top: 20px; width: 250px; display: flex; align-items: center; gap: 10px;";
+
+    const zoomLabel = document.createElement('span');
+    zoomLabel.textContent = "拡大";
+    zoomLabel.style.color = "#fff";
+    zoomLabel.style.fontSize = "0.8rem";
+
+    const zoomSlider = document.createElement('input');
+    zoomSlider.type = "range";
+    zoomSlider.min = "1.0";
+    zoomSlider.max = "3.0";
+    zoomSlider.step = "0.01";
+    zoomSlider.value = "1.0";
+    zoomSlider.style.flex = "1";
+
+    zoomSlider.oninput = (e) => {
+        const oldZoom = currentZoom;
+        currentZoom = parseFloat(e.target.value);
+
+        // 中心を起点に拡大
+        const scaleDiff = (baseScale * currentZoom) / (baseScale * oldZoom);
+        posX = 150 - (150 - posX) * scaleDiff;
+        posY = 150 - (150 - posY) * scaleDiff;
+
+        draw();
+    };
+
+    zoomContainer.appendChild(zoomLabel);
+    zoomContainer.appendChild(zoomSlider);
+    modal.appendChild(zoomContainer);
 
     // ドラッグ操作
     let isDragging = false;
@@ -85,17 +126,33 @@ function showCropperModal(img, resolve, reject) {
         draw();
     };
 
-    const onEnd = () => {
-        isDragging = false;
-    };
+    const onEnd = () => { isDragging = false; };
 
-    modal.addEventListener('mousedown', onStart);
+    container.addEventListener('mousedown', onStart);
     window.addEventListener('mousemove', onMove);
     window.addEventListener('mouseup', onEnd);
-
-    modal.addEventListener('touchstart', onStart);
+    container.addEventListener('touchstart', onStart);
     window.addEventListener('touchmove', onMove);
     window.addEventListener('touchend', onEnd);
+
+    // マウスホイールでのズーム
+    container.addEventListener('wheel', (e) => {
+        e.preventDefault();
+        const delta = e.deltaY > 0 ? -0.1 : 0.1;
+        const newZoom = Math.min(3.0, Math.max(1.0, currentZoom + delta));
+
+        if (newZoom !== currentZoom) {
+            const oldZoom = currentZoom;
+            currentZoom = newZoom;
+            zoomSlider.value = currentZoom;
+
+            const scaleDiff = (baseScale * currentZoom) / (baseScale * oldZoom);
+            posX = 150 - (150 - posX) * scaleDiff;
+            posY = 150 - (150 - posY) * scaleDiff;
+
+            draw();
+        }
+    }, { passive: false });
 
     // ボタン
     const footer = document.createElement('div');
@@ -104,10 +161,7 @@ function showCropperModal(img, resolve, reject) {
     const cancelBtn = document.createElement('button');
     cancelBtn.textContent = "キャンセル";
     cancelBtn.className = "btn-retro back";
-    cancelBtn.onclick = () => {
-        cleanup();
-        reject();
-    };
+    cancelBtn.onclick = () => { cleanup(); reject(); };
 
     const okBtn = document.createElement('button');
     okBtn.textContent = "決定";
