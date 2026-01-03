@@ -111,14 +111,20 @@ export async function openCharView(id) {
     ];
 
     // カスタム項目も統合
-    (data.customItems || []).forEach(ci => memoItems.push({ label: ci.label, value: ci.value }));
+    if (data.customItems && Array.isArray(data.customItems)) {
+        data.customItems.forEach(ci => {
+            if (ci.label || ci.value) { // ラベルか値のどちらかがあれば表示対象
+                memoItems.push({ label: ci.label || "(無題)", value: ci.value || "" });
+            }
+        });
+    }
 
     memosContainer.innerHTML = memoItems
-        .filter(m => m.value)
+        .filter(m => m.label && (m.value !== undefined && m.value !== null && m.value !== ""))
         .map(m => `
             <div class="collapsible-container">
                 <div class="collapsible-header" onclick="this.parentElement.classList.toggle('collapsed')">
-                    <div class="gold-bold" style="font-size:0.8rem; margin-bottom:0;">${m.label}</div>
+                    <div class="gold-bold" style="font-size:0.8rem; margin-bottom:0;">${escapeHtml(m.label)}</div>
                 </div>
                 <div class="collapsible-content">
                     <div style="color:#fff; white-space:pre-wrap; line-height:1.6; font-size:1.1rem;">${escapeHtml(m.value)}</div>
@@ -297,19 +303,23 @@ export async function saveCharacter() {
         }
 
         const customItems = [];
-        const itemNodes = document.querySelectorAll('#char-custom-items .collapsible-container');
-        console.log(`[CharEditor] カスタム項目を ${itemNodes.length} 件検出しました`);
+        const customItemsArea = document.getElementById('char-custom-items');
+        if (customItemsArea) {
+            const itemNodes = customItemsArea.querySelectorAll('.collapsible-container');
+            console.log(`[CharEditor] カスタム項目を ${itemNodes.length} 件検出しました`);
 
-        itemNodes.forEach(div => {
-            const labelEl = div.querySelector('.custom-label');
-            const valueEl = div.querySelector('.custom-value');
-            if (labelEl && valueEl) {
-                customItems.push({
-                    label: labelEl.value.trim(),
-                    value: valueEl.value.trim()
-                });
-            }
-        });
+            itemNodes.forEach(div => {
+                const labelEl = div.querySelector('.custom-label');
+                const valueEl = div.querySelector('.custom-value');
+                if (labelEl && valueEl) {
+                    const label = labelEl.value.trim();
+                    const value = valueEl.value.trim();
+                    if (label || value) { // どちらかがあれば保存
+                        customItems.push({ label, value });
+                    }
+                }
+            });
+        }
 
         const getVal = (id) => {
             const el = document.getElementById(id);
