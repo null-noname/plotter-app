@@ -5,6 +5,7 @@
 import { getDb, getAuth } from '../../core/firebase.js';
 import { getState } from '../../core/state.js';
 import { escapeHtml, resizeImageToBase64, autoResizeTextarea } from '../../utils/dom-utils.js';
+import { openCropper } from '../../utils/cropper-utils.js';
 
 let currentCharId = null;
 let pendingIconFile = null;
@@ -115,7 +116,7 @@ export async function openCharView(id) {
     memosContainer.innerHTML = memoItems
         .filter(m => m.value)
         .map(m => `
-            <div class="collapsible-container collapsed">
+            <div class="collapsible-container">
                 <div class="collapsible-header" onclick="this.parentElement.classList.toggle('collapsed')">
                     <div class="gold-bold" style="font-size:0.8rem; margin-bottom:0;">${m.label}</div>
                 </div>
@@ -206,17 +207,20 @@ function fillFields(data) {
 }
 
 /**
- * アイコン画像選択時のプレビュー
+ * アイコン画像選択時のプレビュー（切り抜き対応）
  */
-function onIconFileChange(e) {
+async function onIconFileChange(e) {
     const file = e.target.files[0];
     if (!file) return;
-    pendingIconFile = file;
-    const reader = new FileReader();
-    reader.onload = (re) => {
-        document.getElementById('char-icon-preview').innerHTML = `<img src="${re.target.result}" style="width:100%; height:100%; object-fit:cover;">`;
-    };
-    reader.readAsDataURL(file);
+
+    try {
+        const croppedBase64 = await openCropper(file);
+        pendingIconFile = null; // 既にBase64化されているのでFileオブジェクトは不要
+        currentIconUrl = croppedBase64;
+        document.getElementById('char-icon-preview').innerHTML = `<img src="${croppedBase64}" style="width:100%; height:100%; object-fit:cover;">`;
+    } catch (err) {
+        // キャンセル時は何もしない
+    }
 }
 
 /**
@@ -225,21 +229,32 @@ function onIconFileChange(e) {
 export function addCharCustomItem(label = "", value = "") {
     const container = document.getElementById('char-custom-items');
     const div = document.createElement('div');
-    div.className = 'char-memo-item';
+    div.className = 'collapsible-container';
     div.innerHTML = `
-        <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #333; margin-bottom:4px;">
-            <input type="text" class="custom-label gold-bold" value="${label}" placeholder="項目名" style="flex:1; font-size:0.75rem; color:#fff; background:transparent; border:none; padding:4px 0; font-weight:bold;">
-            <button class="btn-delete-item" style="background:var(--clr-delete); color:#fff; width:22px; height:22px; border-radius:4px; display:flex; align-items:center; justify-content:center; border:none; cursor:pointer; font-weight:bold; font-size:1rem; padding:0;">×</button>
+        <div class="collapsible-header" onclick="this.parentElement.classList.toggle('collapsed')">
+            <div class="gold-bold" style="font-size:0.8rem; margin-bottom:0;">${label || "カスタム項目"}</div>
         </div>
-        <textarea class="custom-value auto-resize" style="width:100%; height:60px; padding:8px; background:#111; border:1px solid #444; color:#fff; resize:none;">${value}</textarea>
+        <div class="collapsible-content">
+            <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #333; margin-bottom:4px;">
+                <input type="text" class="custom-label gold-bold" value="${label}" placeholder="項目名" style="flex:1; font-size:0.75rem; color:#fff; background:transparent; border:none; padding:4px 0; font-weight:bold;">
+                <button class="btn-delete-item" style="background:var(--clr-delete); color:#fff; width:22px; height:22px; border-radius:4px; display:flex; align-items:center; justify-content:center; border:none; cursor:pointer; font-weight:bold; font-size:1rem; padding:0;">×</button>
+            </div>
+            <textarea class="custom-value auto-resize" style="width:100%; height:60px; padding:8px; background:#111; border:1px solid #444; color:#fff; resize:none;">${value}</textarea>
+        </div>
     `;
+
+    const labelInput = div.querySelector('.custom-label');
+    labelInput.addEventListener('input', (e) => {
+        div.querySelector('.collapsible-header div').textContent = e.target.value || "（項目名なし）";
+    });
 
     const textarea = div.querySelector('.custom-value');
     textarea.addEventListener('input', (e) => autoResizeTextarea(e.target));
     setTimeout(() => autoResizeTextarea(textarea), 0);
 
     // 削除ボタンのイベント
-    div.querySelector('.btn-delete-item').addEventListener('click', () => {
+    div.querySelector('.btn-delete-item').addEventListener('click', (e) => {
+        e.stopPropagation(); // ヘッダーのクリックイベントを防ぐ
         if (confirm("本当に削除しますか？")) {
             div.remove();
         }

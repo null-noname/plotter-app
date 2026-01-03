@@ -80,7 +80,7 @@ export async function openPlotView(id) {
         if (basicViewArea) basicViewArea.style.display = 'none';
         timelineView.style.display = 'block';
         timelineList.innerHTML = (data.timelineItems || []).map(item => `
-            <div class="collapsible-container collapsed">
+            <div class="collapsible-container">
                 <div class="collapsible-header" onclick="this.parentElement.classList.toggle('collapsed')">
                     <div style="color:var(--clr-save); font-size:0.9rem; font-weight:bold;">${item.date || "日時未設定"}</div>
                 </div>
@@ -181,28 +181,35 @@ function renderTimelineEntries() {
 
     list.innerHTML = "";
     timelineItems.forEach((item, index) => {
-        const row = document.createElement('div');
-        row.style.display = 'flex';
-        row.style.gap = '10px';
-        row.style.marginBottom = '10px';
-        row.style.alignItems = 'flex-start';
+        const container = document.createElement('div');
+        container.className = 'collapsible-container';
 
-        row.innerHTML = `
-            <input type="text" class="tl-date" placeholder="日時" value="${item.date}"
-                style="width:60px; padding:6px; background:#0a0a0a; border:1px solid #333; color:var(--clr-save); font-size:0.85rem; align-self: center; text-align: center;">
-            <textarea class="tl-content" placeholder="内容"
-                style="flex: 1; height:40px; padding:8px; background:#111; border:1px solid #444; color:#fff; font-size:0.95rem; resize:none; overflow-y:hidden;">${item.content}</textarea>
-            <div style="display:flex; gap:4px; align-items: center;">
-                <button class="btn-sort tl-up" style="${index === 0 ? 'opacity:0.3; cursor:default;' : ''}">▲</button>
-                <button class="btn-icon tl-del" style="background:var(--clr-delete); color:#fff; width:24px; height:24px; border-radius:4px; display:flex; align-items:center; justify-content:center; border:none; cursor:pointer; font-weight:bold; font-size:1.1rem; padding: 0;">×</button>
+        container.innerHTML = `
+            <div class="collapsible-header" onclick="this.parentElement.classList.toggle('collapsed')">
+                <div style="color:var(--clr-save); font-size:0.9rem; font-weight:bold;">${item.date || "（新規エントリー）"}</div>
+            </div>
+            <div class="collapsible-content">
+                <div style="display:flex; gap:10px; margin-bottom:10px; alignItems:flex-start;">
+                    <input type="text" class="tl-date" placeholder="日時" value="${item.date}"
+                        style="width:80px; padding:6px; background:#0a0a0a; border:1px solid #333; color:var(--clr-save); font-size:0.85rem; align-self: center; text-align: center;">
+                    <textarea class="tl-content" placeholder="内容"
+                        style="flex: 1; height:40px; padding:8px; background:#111; border:1px solid #444; color:#fff; font-size:0.95rem; resize:none; overflow-y:hidden;">${item.content}</textarea>
+                    <div style="display:flex; gap:4px; align-items: center;">
+                        <button class="btn-sort tl-up" style="${index === 0 ? 'opacity:0.3; cursor:default;' : ''}">▲</button>
+                        <button class="btn-icon tl-del" style="background:var(--clr-delete); color:#fff; width:24px; height:24px; border-radius:4px; display:flex; align-items:center; justify-content:center; border:none; cursor:pointer; font-weight:bold; font-size:1.1rem; padding: 0;">×</button>
+                    </div>
+                </div>
             </div>
         `;
 
         // イベント紐付け
-        const dateInput = row.querySelector('.tl-date');
-        const contentInput = row.querySelector('.tl-content');
+        const dateInput = container.querySelector('.tl-date');
+        const contentInput = container.querySelector('.tl-content');
 
-        dateInput.addEventListener('input', (e) => { timelineItems[index].date = e.target.value; });
+        dateInput.addEventListener('input', (e) => {
+            timelineItems[index].date = e.target.value;
+            container.querySelector('.collapsible-header div').textContent = e.target.value || "（空の日時）";
+        });
         contentInput.addEventListener('input', (e) => {
             timelineItems[index].content = e.target.value;
             autoResizeTextarea(e.target);
@@ -211,7 +218,7 @@ function renderTimelineEntries() {
         // 初期化時のリサイズ
         setTimeout(() => autoResizeTextarea(contentInput), 0);
 
-        row.querySelector('.tl-up').addEventListener('click', () => {
+        container.querySelector('.tl-up').addEventListener('click', () => {
             if (index > 0) {
                 const temp = timelineItems[index];
                 timelineItems[index] = timelineItems[index - 1];
@@ -220,14 +227,14 @@ function renderTimelineEntries() {
             }
         });
 
-        row.querySelector('.tl-del').addEventListener('click', () => {
+        container.querySelector('.tl-del').addEventListener('click', () => {
             if (confirm("本当に削除しますか？")) {
                 timelineItems.splice(index, 1);
                 renderTimelineEntries();
             }
         });
 
-        list.appendChild(row);
+        list.appendChild(container);
     });
 }
 

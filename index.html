@@ -189,8 +189,8 @@
                         <!-- Basic Plot Content (Shown in "Normal" mode) -->
                         <div id="plot-basic-content">
                             <label class="gold-bold">内容</label>
-                            <textarea id="plot-content" placeholder="プロット本文を入力..."
-                                style="width:100%; height:450px; padding:12px; background:#111; border:1px solid #444; color:#fff; font-size:1.1rem; resize:none; margin-bottom:20px;"></textarea>
+                            <textarea id="plot-content" class="auto-resize" placeholder="プロット本文を入力..."
+                                style="width:100%; min-height:450px; padding:12px; background:#111; border:1px solid #444; color:#fff; font-size:1.1rem; resize:none; margin-bottom:20px;"></textarea>
                         </div>
 
                         <!-- Timeline Content (Shown in "Timeline" mode) -->
@@ -249,24 +249,32 @@
                                     </div>
                                 </div>
                                 <div
-                                    style="display:grid; grid-template-columns: 1fr 1fr; gap:8px 2em; border-bottom:1px solid #444; padding-bottom:12px; color:#fff; font-size:0.95rem; align-items: baseline;">
-                                    <div style="grid-column: 1 / -1;">
+                                    style="display:grid; grid-template-columns: 140px 1fr; gap:8px 0; border-bottom:1px solid #444; padding-bottom:12px; color:#fff; font-size:0.95rem; align-items: baseline;">
+                                    <div style="grid-column: 1 / -1; margin-bottom: 4px;">
                                         <span class="gold-bold"
                                             style="font-size:0.8rem; opacity:0.7; display:inline; margin-bottom:0;">別名：</span>
                                         <span id="char-view-alias" style="font-weight:bold; font-size:1.1rem;"></span>
                                     </div>
-                                    <div><span class="gold-bold"
-                                            style="font-size:0.8rem; opacity:0.7; display:inline; margin-bottom:0;">誕生日：</span><span
-                                            id="char-view-birth"></span></div>
-                                    <div><span class="gold-bold"
-                                            style="font-size:0.8rem; opacity:0.7; display:inline; margin-bottom:0;">年齢：</span><span
-                                            id="char-view-age"></span></div>
-                                    <div><span class="gold-bold"
-                                            style="font-size:0.8rem; opacity:0.7; display:inline; margin-bottom:0;">役職：</span><span
-                                            id="char-view-role"></span></div>
-                                    <div><span class="gold-bold"
-                                            style="font-size:0.8rem; opacity:0.7; display:inline; margin-bottom:0;">身長：</span><span
-                                            id="char-view-height"></span></div>
+                                    <div>
+                                        <span class="gold-bold"
+                                            style="font-size:0.8rem; opacity:0.7; display:inline; margin-bottom:0;">誕生日：</span>
+                                        <span id="char-view-birth" style="font-weight:bold;"></span>
+                                    </div>
+                                    <div>
+                                        <span class="gold-bold"
+                                            style="font-size:0.8rem; opacity:0.7; display:inline; margin-bottom:0;">年齢：</span>
+                                        <span id="char-view-age" style="font-weight:bold;"></span>
+                                    </div>
+                                    <div>
+                                        <span class="gold-bold"
+                                            style="font-size:0.8rem; opacity:0.7; display:inline; margin-bottom:0;">身長：</span>
+                                        <span id="char-view-height" style="font-weight:bold;"></span>
+                                    </div>
+                                    <div>
+                                        <span class="gold-bold"
+                                            style="font-size:0.8rem; opacity:0.7; display:inline; margin-bottom:0;">役職：</span>
+                                        <span id="char-view-role" style="font-weight:bold;"></span>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -372,20 +380,35 @@
 
                         <!-- Mid Section: Detail Memos -->
                         <div id="char-memos-container">
-                            <div class="char-memo-item" style="margin-bottom:12px;">
-                                <label class="gold-bold" style="font-size:0.75rem;">見た目・性格</label>
-                                <textarea id="char-looks"
-                                    style="width:100%; height:80px; padding:8px; background:#111; border:1px solid #444; color:#fff; resize:none;"></textarea>
+                            <div class="collapsible-container">
+                                <div class="collapsible-header"
+                                    onclick="this.parentElement.classList.toggle('collapsed')">
+                                    <div class="gold-bold" style="font-size:0.8rem; margin-bottom:0;">見た目・性格</div>
+                                </div>
+                                <div class="collapsible-content">
+                                    <textarea id="char-looks" class="auto-resize"
+                                        style="width:100%; height:80px; padding:8px; background:#111; border:1px solid #444; color:#fff; resize:none;"></textarea>
+                                </div>
                             </div>
-                            <div class="char-memo-item" style="margin-bottom:12px;">
-                                <label class="gold-bold" style="font-size:0.75rem;">特技</label>
-                                <textarea id="char-skill"
-                                    style="width:100%; height:60px; padding:8px; background:#111; border:1px solid #444; color:#fff; resize:none;"></textarea>
+                            <div class="collapsible-container">
+                                <div class="collapsible-header"
+                                    onclick="this.parentElement.classList.toggle('collapsed')">
+                                    <div class="gold-bold" style="font-size:0.8rem; margin-bottom:0;">特技</div>
+                                </div>
+                                <div class="collapsible-content">
+                                    <textarea id="char-skill" class="auto-resize"
+                                        style="width:100%; height:60px; padding:8px; background:#111; border:1px solid #444; color:#fff; resize:none;"></textarea>
+                                </div>
                             </div>
-                            <div class="char-memo-item" style="margin-bottom:12px;">
-                                <label class="gold-bold" style="font-size:0.75rem;">生い立ち</label>
-                                <textarea id="char-history"
-                                    style="width:100%; height:100px; padding:8px; background:#111; border:1px solid #444; color:#fff; resize:none;"></textarea>
+                            <div class="collapsible-container">
+                                <div class="collapsible-header"
+                                    onclick="this.parentElement.classList.toggle('collapsed')">
+                                    <div class="gold-bold" style="font-size:0.8rem; margin-bottom:0;">生い立ち</div>
+                                </div>
+                                <div class="collapsible-content">
+                                    <textarea id="char-history" class="auto-resize"
+                                        style="width:100%; height:100px; padding:8px; background:#111; border:1px solid #444; color:#fff; resize:none;"></textarea>
+                                </div>
                             </div>
                             <div id="char-custom-items">
                                 <!-- Dynamic items -->

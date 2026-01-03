@@ -38,6 +38,19 @@ body {
     overflow-x: hidden;
 }
 
+/* Hide scrollbars completely for a cleaner look */
+::-webkit-scrollbar {
+    width: 0px;
+    background: transparent;
+}
+
+* {
+    scrollbar-width: none;
+    /* Firefox */
+    -ms-overflow-style: none;
+    /* IE/Edge */
+}
+
 /* --- Layout --- */
 .view-container {
     width: 100%;
@@ -418,6 +431,14 @@ textarea:focus {
 
 .collapsible-container.collapsed .collapsible-header {
     border-bottom: none;
+}
+
+.collapsible-header {
+    transition: background 0.2s;
+}
+
+.collapsible-header:active {
+    background: #444;
 }
 
 /* Auto-resize Textarea */
