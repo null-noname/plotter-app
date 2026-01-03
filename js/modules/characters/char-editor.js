@@ -297,7 +297,7 @@ export async function saveCharacter() {
         }
 
         const customItems = [];
-        document.querySelectorAll('#char-custom-items .char-memo-item').forEach(div => {
+        document.querySelectorAll('#char-custom-items .collapsible-container').forEach(div => {
             const labelEl = div.querySelector('.custom-label');
             const valueEl = div.querySelector('.custom-value');
             if (labelEl && valueEl) {

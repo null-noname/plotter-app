@@ -138,6 +138,21 @@ body {
     display: block;
 }
 
+/* Line Clamping for Summary View */
+.line-clamp-5 {
+    display: -webkit-box;
+    -webkit-line-clamp: 5;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Specific adjustment for collapsed state in plot list */
+.collapsible-container.collapsed .collapsible-content.summary-mode {
+    display: block;
+    /* Show summary instead of hiding completely */
+}
+
 /* --- Buttons --- */
 .btn-retro {
     background: #444;

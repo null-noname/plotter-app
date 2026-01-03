@@ -75,41 +75,85 @@ function renderPlotCards(snap, container) {
  * 個別のプロットカード要素を作成
  */
 function createPlotCard(plot) {
-    const preview = (plot.content || "").split('\n').slice(0, 5).join('\n');
     const card = document.createElement('div');
-    card.className = 'card-retro';
+    card.className = 'collapsible-container collapsed card-retro';
+    card.style.padding = "0"; // Override card padding for header
+    card.style.marginBottom = "15px";
 
-    // HTML構築 (イベントは後で紐付け)
+    // プロット内容のサマリー作成
+    let contentHtml = "";
+    if (plot.type === 'timeline') {
+        const count = (plot.timelineItems || []).length;
+        contentHtml = (plot.timelineItems || []).map(item => `
+            <div style="font-size:0.85rem; border-left:2px solid var(--clr-save); padding-left:8px; margin-bottom:4px;">
+                <span style="color:var(--clr-save);">${item.date || "-"}</span>: ${escapeHtml(item.content || "")}
+            </div>
+        `).join('');
+    } else {
+        contentHtml = `<div class="line-clamp-5" style="color:#ddd; white-space:pre-wrap; font-size:0.95rem;">${escapeHtml(plot.content || "")}</div>`;
+    }
+
     card.innerHTML = `
-        <div style="display:flex; justify-content:space-between; align-items:center;">
-            <div class="plot-click-area" style="flex:1; cursor:pointer; display:flex; align-items:center; gap:12px; min-width:0;">
-                <h3 style="font-size:1.1rem; color:#fff; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; flex:1;">${escapeHtml(plot.title || "無題")}</h3>
+        <div class="collapsible-header" style="padding: 12px; display:flex; justify-content:space-between; align-items:center; background: #1a1a1a; border-radius: 8px 8px 0 0;">
+            <div class="header-click-area" style="flex:1; cursor:pointer; display:flex; align-items:center; gap:12px; min-width:0;">
+                <h3 style="font-size:1.1rem; color:#fff; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; flex:1; margin:0;">${escapeHtml(plot.title || "無題")}</h3>
                 <span class="tag" style="color:var(--clr-save); border-color:var(--clr-save); font-size:0.75rem; flex-shrink:0;">${plot.type === 'timeline' ? 'TL' : '基本'}</span>
             </div>
             <div style="display:flex; align-items:center; gap:8px; margin-left:12px;">
+                <button class="btn-retro btn-edit" style="font-size:0.7rem; padding:4px 8px; background:var(--clr-accent);">編集</button>
                 <button class="btn-sort btn-up">▲</button>
-                <button class="btn-sort btn-down">▼</button>
-                <button class="btn-icon btn-delete" style="background:var(--clr-delete); color:#fff; width:28px; height:28px; border-radius:6px; display:flex; align-items:center; justify-content:center; border:none; cursor:pointer; font-weight:bold; font-size:1.2rem; padding: 4px;">×</button>
+                <button class="btn-icon btn-delete" style="background:transparent; color:#666; font-size:1.2rem; border:none; cursor:pointer; padding:0 4px;">×</button>
             </div>
+        </div>
+        <div class="collapsible-content summary-mode" style="padding: 12px; background: #0a0a0a; border-radius: 0 0 8px 8px; cursor:pointer;">
+            ${contentHtml}
         </div>
     `;
 
-    // イベントの紐付け
-    card.querySelector('.plot-click-area').addEventListener('click', () => {
-        openPlotView(plot.id);
+    // ヘッダーまたはコンテンツクリックで開閉
+    const toggle = () => {
+        card.classList.toggle('collapsed');
+        const content = card.querySelector('.collapsible-content');
+        if (card.classList.contains('collapsed')) {
+            content.classList.add('summary-mode');
+            if (plot.type !== 'timeline') content.firstElementChild.classList.add('line-clamp-5');
+        } else {
+            content.classList.remove('summary-mode');
+            if (plot.type !== 'timeline') content.firstElementChild.classList.remove('line-clamp-5');
+            // タイムラインの場合は全表示をレンダリング（後で検討）
+            if (plot.type === 'timeline') renderTimelineFull(plot, content);
+        }
+    };
+
+    card.querySelector('.header-click-area').addEventListener('click', toggle);
+    card.querySelector('.collapsible-content').addEventListener('click', toggle);
+
+    card.querySelector('.btn-edit').addEventListener('click', (e) => {
+        e.stopPropagation();
+        openPlotEditor(plot.id);
     });
 
-    card.querySelector('.btn-up').addEventListener('click', () => {
+    card.querySelector('.btn-up').addEventListener('click', (e) => {
+        e.stopPropagation();
         if (window.plotter_movePlot) window.plotter_movePlot(plot.id, -1);
     });
 
-    card.querySelector('.btn-down').addEventListener('click', () => {
-        if (window.plotter_movePlot) window.plotter_movePlot(plot.id, 1);
-    });
-
-    card.querySelector('.btn-delete').addEventListener('click', () => {
+    card.querySelector('.btn-delete').addEventListener('click', (e) => {
+        e.stopPropagation();
         if (window.plotter_deletePlot) window.plotter_deletePlot(plot.id);
     });
 
     return card;
+}
+
+/**
+ * タイムライン形式の全内容を表示（展開時）
+ */
+function renderTimelineFull(plot, container) {
+    container.innerHTML = (plot.timelineItems || []).map(item => `
+        <div style="margin-bottom:12px; border-bottom:1px solid #222; padding-bottom:8px;">
+            <div style="color:var(--clr-save); font-size:0.85rem; font-weight:bold; margin-bottom:4px;">${item.date || "-"}</div>
+            <div style="color:#eee; white-space:pre-wrap; font-size:1rem;">${escapeHtml(item.content || "")}</div>
+        </div>
+    `).join('') || "内容なし";
 }
