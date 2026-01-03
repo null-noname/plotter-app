@@ -77,51 +77,57 @@ function renderPlotCards(snap, container) {
 function createPlotCard(plot) {
     const card = document.createElement('div');
     card.className = 'collapsible-container collapsed card-retro';
-    card.style.padding = "0"; // Override card padding for header
+    card.style.padding = "0";
     card.style.marginBottom = "15px";
 
     // プロット内容のサマリー作成
-    let contentHtml = "";
-    if (plot.type === 'timeline') {
-        const count = (plot.timelineItems || []).length;
-        contentHtml = (plot.timelineItems || []).map(item => `
-            <div style="font-size:0.85rem; border-left:2px solid var(--clr-save); padding-left:8px; margin-bottom:4px;">
-                <span style="color:var(--clr-save);">${item.date || "-"}</span>: ${escapeHtml(item.content || "")}
-            </div>
-        `).join('');
-    } else {
-        contentHtml = `<div class="line-clamp-5" style="color:#ddd; white-space:pre-wrap; font-size:0.95rem;">${escapeHtml(plot.content || "")}</div>`;
-    }
+    const getSummaryHtml = () => {
+        if (plot.type === 'timeline') {
+            return (plot.timelineItems || []).slice(0, 3).map(item => `
+                <div style="font-size:0.85rem; border-left:2px solid var(--clr-save); padding-left:8px; margin-bottom:4px; color:#999;">
+                    <span style="color:var(--clr-save); opacity:0.7;">${item.date || "-"}</span>: ${escapeHtml(item.content || "")}
+                </div>
+            `).join('') + ((plot.timelineItems || []).length > 3 ? '<div style="color:#666; font-size:0.8rem; margin-top:4px;">...他多数</div>' : '');
+        } else {
+            return `<div class="line-clamp-5" style="color:#ddd; white-space:pre-wrap; font-size:0.95rem;">${escapeHtml(plot.content || "") || "内容なし"}</div>`;
+        }
+    };
 
     card.innerHTML = `
-        <div class="collapsible-header" style="padding: 12px; display:flex; justify-content:space-between; align-items:center; background: #1a1a1a; border-radius: 8px 8px 0 0;">
-            <div class="header-click-area" style="flex:1; cursor:pointer; display:flex; align-items:center; gap:12px; min-width:0;">
+        <div class="collapsible-header" style="padding: 12px; display:flex; justify-content:space-between; align-items:center; background: #1a1a1a; border-radius: 8px 8px 0 0; min-height:50px;">
+            <div class="header-click-area" style="flex:1; cursor:pointer; display:flex; align-items:center; gap:8px; min-width:0;">
+                <span class="toggle-icon gold-bold" style="width:1.2rem; font-size:1.2rem; display:flex; justify-content:center;">＋</span>
                 <h3 style="font-size:1.1rem; color:#fff; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; flex:1; margin:0;">${escapeHtml(plot.title || "無題")}</h3>
-                <span class="tag" style="color:var(--clr-save); border-color:var(--clr-save); font-size:0.75rem; flex-shrink:0;">${plot.type === 'timeline' ? 'TL' : '基本'}</span>
+                <span class="tag" style="color:var(--clr-save); border-color:var(--clr-save); font-size:0.7rem; flex-shrink:0;">${plot.type === 'timeline' ? 'TL' : '基本'}</span>
             </div>
             <div style="display:flex; align-items:center; gap:8px; margin-left:12px;">
-                <button class="btn-retro btn-edit" style="font-size:0.7rem; padding:4px 8px; background:var(--clr-accent);">編集</button>
-                <button class="btn-sort btn-up">▲</button>
-                <button class="btn-icon btn-delete" style="background:transparent; color:#666; font-size:1.2rem; border:none; cursor:pointer; padding:0 4px;">×</button>
+                <button class="btn-retro btn-delete" style="background:var(--clr-delete); font-size:0.75rem; padding:4px 8px; border-radius:4px;">削除</button>
+                <button class="btn-retro btn-edit" style="font-size:0.75rem; padding:4px 8px; border-radius:4px;">編集</button>
+                <button class="btn-sort btn-up" style="padding:4px 8px;">▲</button>
             </div>
         </div>
-        <div class="collapsible-content summary-mode" style="padding: 12px; background: #0a0a0a; border-radius: 0 0 8px 8px; cursor:pointer;">
-            ${contentHtml}
+        <div class="collapsible-content summary-mode" style="padding: 12px; background: #0a0a0a; border-radius: 0 0 8px 8px; cursor:pointer; border-top:1px solid #222;">
+            ${getSummaryHtml()}
         </div>
     `;
 
-    // ヘッダーまたはコンテンツクリックで開閉
     const toggle = () => {
-        card.classList.toggle('collapsed');
+        const isCollapsed = card.classList.toggle('collapsed');
         const content = card.querySelector('.collapsible-content');
-        if (card.classList.contains('collapsed')) {
+        const icon = card.querySelector('.toggle-icon');
+
+        icon.textContent = isCollapsed ? '＋' : '－';
+
+        if (isCollapsed) {
             content.classList.add('summary-mode');
-            if (plot.type !== 'timeline') content.firstElementChild.classList.add('line-clamp-5');
+            content.innerHTML = getSummaryHtml();
         } else {
             content.classList.remove('summary-mode');
-            if (plot.type !== 'timeline') content.firstElementChild.classList.remove('line-clamp-5');
-            // タイムラインの場合は全表示をレンダリング（後で検討）
-            if (plot.type === 'timeline') renderTimelineFull(plot, content);
+            if (plot.type === 'timeline') {
+                renderTimelineFull(plot, content);
+            } else {
+                content.innerHTML = `<div style="color:#eee; white-space:pre-wrap; font-size:1.05rem; line-height:1.6;">${escapeHtml(plot.content || "")}</div>`;
+            }
         }
     };
 

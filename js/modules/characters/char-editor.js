@@ -297,13 +297,16 @@ export async function saveCharacter() {
         }
 
         const customItems = [];
-        document.querySelectorAll('#char-custom-items .collapsible-container').forEach(div => {
+        const itemNodes = document.querySelectorAll('#char-custom-items .collapsible-container');
+        console.log(`[CharEditor] カスタム項目を ${itemNodes.length} 件検出しました`);
+
+        itemNodes.forEach(div => {
             const labelEl = div.querySelector('.custom-label');
             const valueEl = div.querySelector('.custom-value');
             if (labelEl && valueEl) {
                 customItems.push({
-                    label: labelEl.value,
-                    value: valueEl.value
+                    label: labelEl.value.trim(),
+                    value: valueEl.value.trim()
                 });
             }
         });
