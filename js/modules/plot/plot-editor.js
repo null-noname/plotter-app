@@ -64,8 +64,6 @@ export async function openPlotView(id) {
     document.getElementById('plot-view-view').style.display = 'block';
 
     document.getElementById('plot-view-title').textContent = data.title || "無題";
-    document.getElementById('plot-view-catchphrase').textContent = data.catchphrase || "";
-    document.getElementById('plot-view-description').textContent = data.description || "";
 
     const basicViewArea = document.getElementById('plot-view-basic-content-area');
     const basicContent = document.getElementById('plot-view-basic-content');
@@ -110,8 +108,6 @@ export async function openPlotEditor(id = null) {
     }
 
     const titleInput = document.getElementById('plot-title');
-    const catchInput = document.getElementById('plot-catchphrase');
-    const descInput = document.getElementById('plot-description');
     const contentInput = document.getElementById('plot-content');
 
     if (id) {
@@ -122,16 +118,12 @@ export async function openPlotEditor(id = null) {
         if (doc.exists) {
             const data = doc.data();
             titleInput.value = data.title || "";
-            catchInput.value = data.catchphrase || "";
-            descInput.value = data.description || "";
             contentInput.value = data.content || "";
             timelineItems = data.timelineItems || [];
             setPlotType(data.type || 'normal');
         }
     } else {
         titleInput.value = "";
-        catchInput.value = "";
-        descInput.value = "";
         contentInput.value = "";
         setPlotType('normal');
     }
@@ -237,8 +229,6 @@ function renderTimelineEntries() {
 export async function savePlot() {
     const state = getState();
     const title = document.getElementById('plot-title').value.trim();
-    const catchphrase = document.getElementById('plot-catchphrase').value.trim();
-    const description = document.getElementById('plot-description').value.trim();
     const content = document.getElementById('plot-content').value;
 
     if (!title) {
@@ -249,8 +239,6 @@ export async function savePlot() {
         const fb = window.firebase;
         const data = {
             title: title,
-            catchphrase: catchphrase,
-            description: description,
             content: currentPlotType === 'timeline' ? "" : content,
             type: currentPlotType,
             timelineItems: currentPlotType === 'timeline' ? timelineItems : [],
