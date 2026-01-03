@@ -127,7 +127,7 @@ export async function openCharView(id) {
                     <div class="gold-bold" style="font-size:0.8rem; margin-bottom:0;">${escapeHtml(m.label)}</div>
                 </div>
                 <div class="collapsible-content">
-                    <div style="color:#fff; white-space:pre-wrap; line-height:1.6; font-size:1.1rem;">${escapeHtml(m.value)}</div>
+                    <div style="color:#fff; white-space:pre-wrap; line-height:1.6; font-size:0.95rem;">${escapeHtml(m.value)}</div>
                 </div>
             </div>
         `).join('');

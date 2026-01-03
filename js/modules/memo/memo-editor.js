@@ -1,10 +1,6 @@
-/**
- * memo-editor.js - 共通メモの編集・保存・操作の管理
- */
-
 import { getDb } from '../../core/firebase.js';
 import { getState } from '../../core/state.js';
-import { escapeHtml } from '../../utils/dom-utils.js';
+import { escapeHtml, autoResizeTextarea } from '../../utils/dom-utils.js';
 
 let currentMemoId = null;
 
@@ -14,7 +10,6 @@ let currentMemoId = null;
 export function initMemoEditor() {
     // グローバルブリッジ
     window.plotter_openMemoEditor = openMemoEditor;
-    window.plotter_openMemoView = openMemoView;
     window.plotter_deleteMemo = deleteMemo;
     window.plotter_moveMemo = moveMemo;
 
@@ -28,46 +23,12 @@ export function initMemoEditor() {
 
     // イベントリスナー: 戻る
     const backBtn = document.querySelector('#memo-edit-view .btn-retro.back');
-    if (backBtn) backBtn.addEventListener('click', () => {
-        if (currentMemoId) {
-            openMemoView(currentMemoId);
-        } else {
-            closeMemoEditor();
-        }
-    });
+    if (backBtn) backBtn.addEventListener('click', closeMemoEditor);
 
-    // 閲覧画面用：戻る・編集
-    const viewBackBtn = document.getElementById('memo-view-back');
-    if (viewBackBtn) viewBackBtn.addEventListener('click', closeMemoEditor);
-
-    const viewEditBtn = document.getElementById('memo-view-edit-btn');
-    if (viewEditBtn) viewEditBtn.addEventListener('click', () => openMemoEditor(currentMemoId));
-}
-
-/**
- * 閲覧モードを開く
- */
-export async function openMemoView(id) {
-    const state = getState();
-    if (!state.selectedWorkId) return;
-
-    currentMemoId = id;
-    const db = getDb();
-    const doc = await db.collection("works").doc(state.selectedWorkId)
-        .collection("memos").doc(id).get();
-
-    if (!doc.exists) return;
-    const data = doc.data();
-
-    // 表示切り替え
-    document.getElementById('memo-list-view').style.display = 'none';
-    document.getElementById('memo-edit-view').style.display = 'none';
-    document.getElementById('memo-view-view').style.display = 'block';
-
-    document.getElementById('memo-view-title').textContent = data.title || "無題";
-    const tagsContainer = document.getElementById('memo-view-tags');
-    tagsContainer.innerHTML = (data.tags || []).map(t => `<span class="tag" style="background:#333; color:#fff;">${escapeHtml(t)}</span>`).join('');
-    document.getElementById('memo-view-content').textContent = data.content || "";
+    const contentInput = document.getElementById('memo-content');
+    if (contentInput) {
+        contentInput.addEventListener('input', (e) => autoResizeTextarea(e.target));
+    }
 }
 
 /**
@@ -76,7 +37,6 @@ export async function openMemoView(id) {
 export async function openMemoEditor(id = null) {
     currentMemoId = id;
     document.getElementById('memo-list-view').style.display = 'none';
-    document.getElementById('memo-view-view').style.display = 'none';
     document.getElementById('memo-edit-view').style.display = 'block';
 
     const titleInput = document.getElementById('memo-title');
@@ -93,11 +53,13 @@ export async function openMemoEditor(id = null) {
             titleInput.value = data.title || "";
             tagsInput.value = (data.tags || []).join(', ');
             contentInput.value = data.content || "";
+            setTimeout(() => autoResizeTextarea(contentInput), 0);
         }
     } else {
         titleInput.value = "";
         tagsInput.value = "";
         contentInput.value = "";
+        autoResizeTextarea(contentInput);
     }
 }
 
@@ -106,7 +68,6 @@ export async function openMemoEditor(id = null) {
  */
 export function closeMemoEditor() {
     document.getElementById('memo-list-view').style.display = 'block';
-    document.getElementById('memo-view-view').style.display = 'none';
     document.getElementById('memo-edit-view').style.display = 'none';
 }
 
@@ -121,6 +82,8 @@ export async function saveMemo() {
     const tags = document.getElementById('memo-tags').value.split(',').map(t => t.trim()).filter(t => t);
     const content = document.getElementById('memo-content').value;
 
+    if (!title) return;
+
     const fb = window.firebase || firebase;
     const data = {
         uid: state.currentUser.uid,
@@ -134,18 +97,16 @@ export async function saveMemo() {
     const collection = db.collection("works").doc(state.selectedWorkId).collection("memos");
 
     try {
-        let savedId = currentMemoId;
         if (currentMemoId) {
             await collection.doc(currentMemoId).update(data);
         } else {
             const snap = await collection.get();
             data.order = snap.size;
             data.createdAt = fb.firestore.FieldValue.serverTimestamp();
-            const docRef = await collection.add(data);
-            savedId = docRef.id;
+            await collection.add(data);
         }
-        // 保存後は閲覧モードへ遷移
-        openMemoView(savedId);
+        // 保存後は一覧に戻る
+        closeMemoEditor();
     } catch (error) {
         console.error('[MemoEditor] 保存エラー:', error);
     }
@@ -191,6 +152,6 @@ export async function moveMemo(id, dir) {
         batch.update(collection.doc(other.id), { order: idx });
         await batch.commit();
     } catch (error) {
-        console.error('[MemoEditor] 並びび替えエラー:', error);
+        console.error('[MemoEditor] 並び替えエラー:', error);
     }
 }

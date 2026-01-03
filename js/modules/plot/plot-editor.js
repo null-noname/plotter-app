@@ -273,8 +273,8 @@ export async function savePlot() {
             const docRef = await ref.add(data);
             savedId = docRef.id;
         }
-        // 保存後は一覧ではなく閲覧モードへ遷移
-        openPlotView(savedId);
+        // 保存後は一覧に戻る
+        closePlotEditor();
     } catch (error) {
         console.error('[PlotEditor] 保存エラー:', error);
     }

@@ -102,7 +102,7 @@ function createPlotCard(plot) {
             </div>
             <div style="display:flex; align-items:center; gap:8px; margin-left:12px;">
                 <button class="btn-retro btn-delete" style="background:var(--clr-delete); font-size:0.75rem; padding:4px 8px; border-radius:4px;">削除</button>
-                <button class="btn-retro btn-edit" style="font-size:0.75rem; padding:4px 8px; border-radius:4px;">編集</button>
+                <button class="btn-retro btn-edit blue" style="font-size:0.75rem; padding:4px 8px; border-radius:4px;">編集</button>
                 <button class="btn-sort btn-up" style="padding:4px 8px;">▲</button>
             </div>
         </div>
