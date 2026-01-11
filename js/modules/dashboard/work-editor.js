@@ -166,10 +166,7 @@ function renderWorkView(container, data) {
                     <span class="gold-bold" style="display:inline;">長さ：</span>${data.length === 'short' ? '短編' : '長編'}　
                     <span class="gold-bold" style="display:inline;">AI利用：</span>${aiLabels[data.ai] || "なし"}
                 </div>
-                ${activeRatings ? `
-                <div style="margin-top:2px;">
-                    <span class="gold-bold" style="display:inline;">レーティング：</span>${activeRatings}
-                </div>` : ''}
+                ${activeRatings ? '<div style="margin-top:2px;"><span class="gold-bold" style="display:inline;">レーティング：</span>' + activeRatings + '</div>' : ''}
             </div>
 
             <label class="gold-bold" style="font-size:0.8rem; opacity:0.7; margin-bottom:2px;">キャッチコピー</label>
