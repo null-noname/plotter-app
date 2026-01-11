@@ -31,10 +31,10 @@ export function initAuth() {
     auth.onAuthStateChanged(user => {
         if (user) {
             console.log('[Auth] ログイン完了:', user.displayName);
-            setState({ currentUser: user });
+            setState({ currentUser: user, isAuthReady: true });
         } else {
             console.log('[Auth] ログアウト状態');
-            setState({ currentUser: null });
+            setState({ currentUser: null, isAuthReady: true });
         }
     });
 }

@@ -9,6 +9,7 @@ const state = {
     currentTab: localStorage.getItem('plotter_currentTab') || 'top',
     lastActiveTab: localStorage.getItem('plotter_lastActiveTab') || 'plot', // 最後に開いていた作品内タブ
     currentUser: null,
+    isAuthReady: false, // 認証情報の初期確認が完了したか
     listeners: []
 };
 

@@ -34,6 +34,13 @@ function renderScreen(state) {
     const loginScreen = document.getElementById('login-screen');
     const mainApp = document.getElementById('main-app');
 
+    // まだ認証情報を確認中の場合は、どちらの画面も表示しない
+    if (!state.isAuthReady) {
+        if (loginScreen) loginScreen.style.display = 'none';
+        if (mainApp) mainApp.style.display = 'none';
+        return;
+    }
+
     if (state.currentUser) {
         if (loginScreen) loginScreen.style.display = 'none';
         if (mainApp) mainApp.style.display = 'block';
