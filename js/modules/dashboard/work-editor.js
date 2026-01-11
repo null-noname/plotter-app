@@ -155,28 +155,28 @@ function renderWorkView(container, data) {
 
     container.innerHTML = `
         <div class="card-retro">
-            <h3 style="color:#fff; font-size:1.6rem; margin-bottom:10px;">\${escapeHtml(data.title || "無題")}</h3>
+            <h3 style="color:#fff; font-size:1.6rem; margin-bottom:10px;">${escapeHtml(data.title || "無題")}</h3>
             
             <div style="margin-bottom:15px; font-size:0.95rem; line-height:1.6; color:#ccc;">
                 <div>
-                    <span class="gold-bold" style="display:inline;">状態：</span>\${statusLabel}　
-                    <span class="gold-bold" style="display:inline;">種別：</span>\${data.type === 'derivative' ? '二次創作' : 'オリジナル'}
+                    <span class="gold-bold" style="display:inline;">状態：</span>${statusLabel}　
+                    <span class="gold-bold" style="display:inline;">種別：</span>${data.type === 'derivative' ? '二次創作' : 'オリジナル'}
                 </div>
                 <div>
-                    <span class="gold-bold" style="display:inline;">長さ：</span>\${data.length === 'short' ? '短編' : '長編'}　
-                    <span class="gold-bold" style="display:inline;">AI利用：</span>\${aiLabels[data.ai] || "なし"}
+                    <span class="gold-bold" style="display:inline;">長さ：</span>${data.length === 'short' ? '短編' : '長編'}　
+                    <span class="gold-bold" style="display:inline;">AI利用：</span>${aiLabels[data.ai] || "なし"}
                 </div>
-                \${activeRatings ? `
+                ${activeRatings ? `
                 <div style="margin-top:2px;">
-                    <span class="gold-bold" style="display:inline;">レーティング：</span>\${activeRatings}
+                    <span class="gold-bold" style="display:inline;">レーティング：</span>${activeRatings}
                 </div>` : ''}
             </div>
 
             <label class="gold-bold" style="font-size:0.8rem; opacity:0.7; margin-bottom:2px;">キャッチコピー</label>
-            <div style="color:#fff; margin-bottom:15px; font-size:1.1rem;">\${escapeHtml(data.catchphrase || "（未設定）")}</div>
+            <div style="color:#fff; margin-bottom:15px; font-size:1.1rem;">${escapeHtml(data.catchphrase || "（未設定）")}</div>
             
             <label class="gold-bold" style="font-size:0.8rem; opacity:0.7; margin-bottom:2px;">あらすじ</label>
-            <div style="color:#fff; white-space:pre-wrap; line-height:1.7; font-size:1.1rem; margin-bottom:20px;">\${escapeHtml(data.description || "あらすじ未入力")}</div>
+            <div style="color:#fff; white-space:pre-wrap; line-height:1.7; font-size:1.1rem; margin-bottom:20px;">${escapeHtml(data.description || "あらすじ未入力")}</div>
         </div>
     `;
 }
@@ -189,35 +189,35 @@ function generateFormHtml(p) {
         <div class="card-retro">
             <div class="form-group mb-20">
                 <label class="gold-bold">作品タイトル</label>
-                <input type="text" id="\${p}-f-title" placeholder="タイトルを入力..." style="width:100%; padding:10px; background:#111; border:1px solid #444; color:#fff; font-size:1.2rem;">
+                <input type="text" id="${p}-f-title" placeholder="タイトルを入力..." style="width:100%; padding:10px; background:#111; border:1px solid #444; color:#fff; font-size:1.2rem;">
             </div>
 
             <div class="form-group mb-20">
                 <div style="display:flex; justify-content:space-between;">
                     <label class="gold-bold">キャッチコピー（残35字）</label>
-                    <span id="\${p}-f-catch-count" style="font-size:0.75rem; color:#888;">残35字</span>
+                    <span id="${p}-f-catch-count" style="font-size:0.75rem; color:#888;">残35字</span>
                 </div>
-                <input type="text" id="\${p}-f-catchphrase" maxlength="35" placeholder="読者を惹きつける一言..." style="width:100%; padding:8px; background:#111; border:1px solid #444; color:#fff;">
+                <input type="text" id="${p}-f-catchphrase" maxlength="35" placeholder="読者を惹きつける一言..." style="width:100%; padding:8px; background:#111; border:1px solid #444; color:#fff;">
             </div>
 
             <div class="form-group mb-20">
                 <label class="gold-bold">あらすじ・概要</label>
-                <textarea id="\${p}-f-description" placeholder="ストーリーの概要を入力..." style="width:100%; height:120px; padding:8px; background:#111; border:1px solid #444; color:#fff; resize:none;"></textarea>
+                <textarea id="${p}-f-description" placeholder="ストーリーの概要を入力..." style="width:100%; height:120px; padding:8px; background:#111; border:1px solid #444; color:#fff; resize:none;"></textarea>
             </div>
 
             <div style="display:grid; grid-template-columns: 1fr 1fr; gap:20px; margin-bottom:20px;">
                 <div>
                     <label class="gold-bold">作品の長さ</label>
                     <div style="display:flex; gap:10px; margin-top:5px;">
-                        <label><input type="radio" name="\${p}-length" value="long" checked> 長編</label>
-                        <label><input type="radio" name="\${p}-length" value="short"> 短編</label>
+                        <label><input type="radio" name="${p}-length" value="long" checked> 長編</label>
+                        <label><input type="radio" name="${p}-length" value="short"> 短編</label>
                     </div>
                 </div>
                 <div>
                     <label class="gold-bold">作品種別</label>
                     <div style="display:flex; gap:10px; margin-top:5px;">
-                        <label><input type="radio" name="\${p}-type" value="original" checked> オリジナル</label>
-                        <label><input type="radio" name="\${p}-type" value="derivative"> 二次創作</label>
+                        <label><input type="radio" name="${p}-type" value="original" checked> オリジナル</label>
+                        <label><input type="radio" name="${p}-type" value="derivative"> 二次創作</label>
                     </div>
                 </div>
             </div>
@@ -226,17 +226,17 @@ function generateFormHtml(p) {
                 <div>
                     <label class="gold-bold">執筆ステータス</label>
                     <div style="display:flex; flex-wrap:wrap; gap:10px; margin-top:5px;">
-                        <label><input type="radio" name="\${p}-status" value="in-progress" checked> 制作中</label>
-                        <label><input type="radio" name="\${p}-status" value="completed"> 完了</label>
-                        <label><input type="radio" name="\${p}-status" value="suspended"> 中断</label>
+                        <label><input type="radio" name="${p}-status" value="in-progress" checked> 制作中</label>
+                        <label><input type="radio" name="${p}-status" value="completed"> 完了</label>
+                        <label><input type="radio" name="${p}-status" value="suspended"> 中断</label>
                     </div>
                 </div>
                 <div>
                     <label class="gold-bold">レーティング</label>
                     <div style="display:flex; flex-wrap:wrap; gap:10px; margin-top:5px;">
-                        <label><input type="checkbox" name="\${p}-rating" value="sexual"> 性描写</label>
-                        <label><input type="checkbox" name="\${p}-rating" value="violent"> 暴力</label>
-                        <label><input type="checkbox" name="\${p}-rating" value="cruel"> 残酷</label>
+                        <label><input type="checkbox" name="${p}-rating" value="sexual"> 性描写</label>
+                        <label><input type="checkbox" name="${p}-rating" value="violent"> 暴力</label>
+                        <label><input type="checkbox" name="${p}-rating" value="cruel"> 残酷</label>
                     </div>
                 </div>
             </div>
@@ -244,15 +244,15 @@ function generateFormHtml(p) {
             <div class="form-group" style="margin-bottom:30px;">
                 <label class="gold-bold">AI利用状況</label>
                 <div style="display:flex; flex-wrap:wrap; gap:10px; margin-top:5px;">
-                    <label><input type="radio" name="\${p}-ai" value="none" checked> なし</label>
-                    <label><input type="radio" name="\${p}-ai" value="assist"> 補助</label>
-                    <label><input type="radio" name="\${p}-ai" value="partial"> 一部</label>
-                    <label><input type="radio" name="\${p}-ai" value="main"> 本文</label>
+                    <label><input type="radio" name="${p}-ai" value="none" checked> なし</label>
+                    <label><input type="radio" name="${p}-ai" value="assist"> 補助</label>
+                    <label><input type="radio" name="${p}-ai" value="partial"> 一部</label>
+                    <label><input type="radio" name="${p}-ai" value="main"> 本文</label>
                 </div>
             </div>
 
             <div style="text-align:center; padding:20px 0; border-top:1px solid #333;">
-                <button id="\${p}-save-btn" class="btn-retro save" style="padding:10px 60px; font-size:1.1rem;">保存</button>
+                <button id="${p}-save-btn" class="btn-retro save" style="padding:10px 60px; font-size:1.1rem;">保存</button>
             </div>
         </div>
     `;
@@ -264,16 +264,16 @@ function generateFormHtml(p) {
  * フォームの値をリセット
  */
 function resetForm(container, p) {
-    container.querySelector(`#\${p}-f-title`).value = '';
-    container.querySelector(`#\${p}-f-catchphrase`).value = '';
-    container.querySelector(`#\${p}-f-description`).value = '';
+    container.querySelector(`#${p}-f-title`).value = '';
+    container.querySelector(`#${p}-f-catchphrase`).value = '';
+    container.querySelector(`#${p}-f-description`).value = '';
 
     setRadioValue(container, p, 'length', 'long');
     setRadioValue(container, p, 'type', 'original');
     setRadioValue(container, p, 'status', 'in-progress');
     setRadioValue(container, p, 'ai', 'none');
 
-    const checkboxes = container.querySelectorAll(`input[name="\${p}-rating"]`);
+    const checkboxes = container.querySelectorAll(`input[name="${p}-rating"]`);
     checkboxes.forEach(cb => cb.checked = false);
 }
 
@@ -281,9 +281,9 @@ function resetForm(container, p) {
  * 既存データをフォームに反映
  */
 function populateForm(container, p, data) {
-    container.querySelector(`#\${p}-f-title`).value = data.title || '';
-    container.querySelector(`#\${p}-f-catchphrase`).value = data.catchphrase || '';
-    container.querySelector(`#\${p}-f-description`).value = data.description || '';
+    container.querySelector(`#${p}-f-title`).value = data.title || '';
+    container.querySelector(`#${p}-f-catchphrase`).value = data.catchphrase || '';
+    container.querySelector(`#${p}-f-description`).value = data.description || '';
 
     setRadioValue(container, p, 'length', data.length || 'long');
     setRadioValue(container, p, 'type', data.type || 'original');
@@ -291,13 +291,13 @@ function populateForm(container, p, data) {
     setRadioValue(container, p, 'ai', data.ai || 'none');
 
     const ratings = data.rating || [];
-    const checkboxes = container.querySelectorAll(`input[name="\${p}-rating"]`);
+    const checkboxes = container.querySelectorAll(`input[name="${p}-rating"]`);
     checkboxes.forEach(cb => {
         cb.checked = ratings.includes(cb.value);
     });
 
-    const catchInput = container.querySelector(`#\${p}-f-catchphrase`);
-    const catchCount = container.querySelector(`#\${p}-f-catch-count`);
+    const catchInput = container.querySelector(`#${p}-f-catchphrase`);
+    const catchCount = container.querySelector(`#${p}-f-catch-count`);
     updateCatchCount(catchInput, catchCount);
 }
 
@@ -310,7 +310,7 @@ async function saveWorkInfo(isNew) {
     const container = document.getElementById(containerId);
     if (!container) return;
 
-    const title = container.querySelector(`#\${p}-f-title`).value.trim();
+    const title = container.querySelector(`#${p}-f-title`).value.trim();
     if (!title) {
         return;
     }
@@ -320,13 +320,13 @@ async function saveWorkInfo(isNew) {
 
     const data = {
         title: title,
-        catchphrase: container.querySelector(`#\${p}-f-catchphrase`).value.trim(),
-        description: container.querySelector(`#\${p}-f-description`).value.trim(),
+        catchphrase: container.querySelector(`#${p}-f-catchphrase`).value.trim(),
+        description: container.querySelector(`#${p}-f-description`).value.trim(),
         length: getRadioValue(container, p, 'length'),
         type: getRadioValue(container, p, 'type'),
         status: getRadioValue(container, p, 'status'),
         ai: getRadioValue(container, p, 'ai'),
-        rating: Array.from(container.querySelectorAll(`input[name="\${p}-rating"]:checked`)).map(cb => cb.value),
+        rating: Array.from(container.querySelectorAll(`input[name="${p}-rating"]:checked`)).map(cb => cb.value),
         updatedAt: firebase.firestore.FieldValue.serverTimestamp()
     };
 
@@ -366,7 +366,7 @@ async function saveWorkInfo(isNew) {
 function updateCatchCount(input, disp) {
     if (input && disp) {
         const remaining = 35 - input.value.length;
-        disp.textContent = `残\${remaining}字`;
+        disp.textContent = `残${remaining}字`;
 
         if (remaining <= 0) {
             disp.classList.add('text-error');
@@ -378,12 +378,12 @@ function updateCatchCount(input, disp) {
 
 // ヘルパー: ラジオボタンの値を取得
 function getRadioValue(container, p, name) {
-    const checked = container.querySelector(`input[name="\${p}-\${name}"]:checked`);
+    const checked = container.querySelector(`input[name="${p}-${name}"]:checked`);
     return checked ? checked.value : null;
 }
 
 // ヘルパー: ラジオボタンの値を設定
 function setRadioValue(container, p, name, value) {
-    const el = container.querySelector(`input[name="\${p}-\${name}"][value="\${value}"]`);
+    const el = container.querySelector(`input[name="${p}-${name}"][value="${value}"]`);
     if (el) el.checked = true;
 }
