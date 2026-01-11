@@ -157,16 +157,16 @@ function renderWorkView(container, data) {
         <div class="card-retro">
             <h3 style="color:#fff; font-size:1.6rem; margin-bottom:10px;">${escapeHtml(data.title || "無題")}</h3>
             
-            <div style="margin-bottom:15px; font-size:0.95rem; line-height:1.6; color:#ccc;">
-                <div>
-                    <span class="gold-bold" style="display:inline;">状態：</span>${statusLabel}　
-                    <span class="gold-bold" style="display:inline;">種別：</span>${data.type === 'derivative' ? '二次創作' : 'オリジナル'}
+            <div class="work-meta-compact">
+                <div class="work-meta-group">
+                    <span class="meta-item"><span class="gold-bold" style="display:inline;">状態：</span>${statusLabel}</span>
+                    <span class="meta-item"><span class="gold-bold" style="display:inline;">種別：</span>${data.type === 'derivative' ? '二次創作' : 'オリジナル'}</span>
                 </div>
-                <div>
-                    <span class="gold-bold" style="display:inline;">長さ：</span>${data.length === 'short' ? '短編' : '長編'}　
-                    <span class="gold-bold" style="display:inline;">AI利用：</span>${aiLabels[data.ai] || "なし"}
+                <div class="work-meta-group">
+                    <span class="meta-item"><span class="gold-bold" style="display:inline;">長さ：</span>${data.length === 'short' ? '短編' : '長編'}</span>
+                    <span class="meta-item"><span class="gold-bold" style="display:inline;">AI利用：</span>${aiLabels[data.ai] || "なし"}</span>
                 </div>
-                ${activeRatings ? '<div style="margin-top:2px;"><span class="gold-bold" style="display:inline;">レーティング：</span>' + activeRatings + '</div>' : ''}
+                ${activeRatings ? '<div class="work-meta-group"><span class="meta-item"><span class="gold-bold" style="display:inline;">レーティング：</span>' + activeRatings + '</span></div>' : ''}
             </div>
 
             <label class="gold-bold" style="font-size:0.8rem; opacity:0.7; margin-bottom:2px;">キャッチコピー</label>

@@ -393,6 +393,32 @@ textarea:focus {
 
 }
 
+/* --- Responsive Work Meta --- */
+.work-meta-compact {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0 16px;
+    margin-bottom: 15px;
+    font-size: 0.95rem;
+    line-height: 1.6;
+    color: #ccc;
+}
+
+.work-meta-group {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+}
+
+@media (max-width: 600px) {
+    .work-meta-compact {
+        display: block; /* Stack groups on mobile */
+    }
+    .work-meta-group {
+        margin-bottom: 2px;
+    }
+}
+
 /* --- Collapsible Sections --- */
 .collapsible-container {
     border: 1px solid #333;
