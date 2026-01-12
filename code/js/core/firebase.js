@@ -1,12 +1,10 @@
-/**
- * firebase.js - Firebase Initialization (Compat Mode for Migration)
- * npmパッケージの firebase/compat を使用して初期化します。
- * これにより、既存コード(v8形式)を維持したままnpm環境へ移行できます。
- */
 import firebase from 'firebase/compat/app';
 import 'firebase/compat/auth';
 import 'firebase/compat/firestore';
 import 'firebase/compat/storage';
+import { getFirestore } from 'firebase/firestore';
+import { getAuth as getAuthSDK } from 'firebase/auth'; // Alias internal import
+import { getStorage as getStorageSDK } from 'firebase/storage'; // Alias internal import
 
 const firebaseConfig = {
     apiKey: "AIzaSyDaXyH96jd-k3r1MRaDiN9KWo2oN2lpaW4",
@@ -17,28 +15,30 @@ const firebaseConfig = {
     appId: "1:666399306180:web:619b5765655311d4a03491"
 };
 
-// Initialize Firebase (Singleton check)
+// Initialize Firebase (Compat)
 if (!firebase.apps.length) {
     firebase.initializeApp(firebaseConfig);
 }
 
-// Export initialized instances
-export const app = firebase.app();
-export const db = firebase.firestore();
-export const auth = firebase.auth();
-export const storage = firebase.storage();
+// Get the Compat App instance
+const app = firebase.app();
 
-// Persistence settings (Keep local persistence)
-auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
+// Export Modular Instances
+export const db = getFirestore(app);
+export const auth = getAuthSDK(app);
+export const storage = getStorageSDK(app);
 
-console.log('[Firebase] Initialized via npm compat');
+// Keep Compat exports if needed
+export const appCompat = app;
 
-// Getter functions for backward compatibility (optional, but keeping structure safe)
+console.log('[Firebase] Initialized via Hybrid (Compat+Modular)');
+
+// Getter functions for compatibility (Keep original names)
 export function getDb() { return db; }
-export function getAuth() { return auth; }
-export function getStorage() { return storage; }
+export function getAuth() { return auth; } // Restored original name
+export function getStorage() { return storage; } // Restored original name
 
 export function initFirebase() {
-    console.log('[Firebase] Explicit initialization called (already initialized at module level).');
+    console.log('[Firebase] Explicit initialization called.');
 }
 
