@@ -6,6 +6,19 @@ import { getDb, getAuth } from '../../core/firebase.js';
 import { getState } from '../../core/state.js';
 import { escapeHtml, resizeImageToBase64, autoResizeTextarea } from '../../utils/dom-utils.js';
 import { openCropper } from '../../utils/cropper-utils.js';
+import {
+    collection,
+    doc,
+    getDoc,
+    getDocs,
+    addDoc,
+    updateDoc,
+    deleteDoc,
+    query,
+    orderBy,
+    writeBatch,
+    serverTimestamp
+} from 'firebase/firestore';
 
 let currentCharId = null;
 let pendingIconFile = null;
@@ -74,11 +87,11 @@ export async function openCharView(id) {
     document.getElementById('char-edit-view').style.display = 'none';
 
     const db = getDb();
-    const doc = await db.collection("works").doc(state.selectedWorkId)
-        .collection("characters").doc(id).get();
+    const charRef = doc(db, "works", state.selectedWorkId, "characters", id);
+    const docSnap = await getDoc(charRef);
 
-    if (!doc.exists) return;
-    const data = doc.data();
+    if (!docSnap.exists()) return;
+    const data = docSnap.data();
     currentIconUrl = data.iconUrl;
 
     // データの流し込み
@@ -152,11 +165,11 @@ export async function openCharEditor(id = null) {
 
     if (id) {
         const db = getDb();
-        const doc = await db.collection("works").doc(state.selectedWorkId)
-            .collection("characters").doc(id).get();
+        const charRef = doc(db, "works", state.selectedWorkId, "characters", id);
+        const docSnap = await getDoc(charRef);
 
-        if (doc.exists) {
-            const data = doc.data();
+        if (docSnap.exists()) {
+            const data = docSnap.data();
             currentIconUrl = data.iconUrl;
             fillFields(data);
             // 内容に合わせて高さを調整
@@ -344,21 +357,23 @@ export async function saveCharacter() {
             history: getVal('char-history'),
             iconUrl: iconUrl,
             customItems: customItems,
-            updatedAt: fb.firestore.FieldValue.serverTimestamp()
+            updatedAt: serverTimestamp()
         };
 
         console.log('[CharEditor] 保存データ詳細:', JSON.parse(JSON.stringify(data)));
 
         const db = getDb();
-        const ref = db.collection("works").doc(state.selectedWorkId).collection("characters");
+        const charsRef = collection(db, "works", state.selectedWorkId, "characters");
 
         if (currentCharId) {
-            await ref.doc(currentCharId).update(data);
+            const charRef = doc(db, "works", state.selectedWorkId, "characters", currentCharId);
+            await updateDoc(charRef, data);
         } else {
-            const snap = await ref.get();
+            const q = query(charsRef);
+            const snap = await getDocs(q);
             data.order = snap.size;
-            data.createdAt = fb.firestore.FieldValue.serverTimestamp();
-            const newDoc = await ref.add(data);
+            data.createdAt = serverTimestamp();
+            const newDoc = await addDoc(charsRef, data);
             currentCharId = newDoc.id;
         }
 
@@ -384,8 +399,8 @@ export async function deleteChar(id) {
     const state = getState();
     const db = getDb();
     try {
-        await db.collection("works").doc(state.selectedWorkId)
-            .collection("characters").doc(id).delete();
+        const charRef = doc(db, "works", state.selectedWorkId, "characters", id);
+        await deleteDoc(charRef);
     } catch (error) {
         console.error('[CharEditor] 削除エラー:', error);
     }
@@ -397,12 +412,13 @@ export async function deleteChar(id) {
 export async function moveChar(id, dir) {
     const state = getState();
     const db = getDb();
-    const ref = db.collection("works").doc(state.selectedWorkId).collection("characters");
+    const charsRef = collection(db, "works", state.selectedWorkId, "characters");
 
     try {
-        const snap = await ref.orderBy("order", "asc").get();
+        const q = query(charsRef, orderBy("order", "asc"));
+        const snap = await getDocs(q);
         const chars = [];
-        snap.forEach(doc => chars.push({ id: doc.id, ...doc.data() }));
+        snap.forEach(docSnap => chars.push({ id: docSnap.id, ...docSnap.data() }));
 
         const idx = chars.findIndex(p => p.id === id);
         if (idx === -1) return;
@@ -410,9 +426,12 @@ export async function moveChar(id, dir) {
         if (targetIdx < 0 || targetIdx >= chars.length) return;
 
         const other = chars[targetIdx];
-        const batch = db.batch();
-        batch.update(ref.doc(id), { order: targetIdx });
-        batch.update(ref.doc(other.id), { order: idx });
+        const batch = writeBatch(db);
+        const currentRef = doc(db, "works", state.selectedWorkId, "characters", id);
+        const otherRef = doc(db, "works", state.selectedWorkId, "characters", other.id);
+
+        batch.update(currentRef, { order: targetIdx });
+        batch.update(otherRef, { order: idx });
         await batch.commit();
     } catch (error) {
         console.error('[CharEditor] 並び替えエラー:', error);

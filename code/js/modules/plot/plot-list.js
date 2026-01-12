@@ -6,6 +6,7 @@ import { getDb } from '../../core/firebase.js';
 import { subscribe } from '../../core/state.js';
 import { escapeHtml, clearContainer } from '../../utils/dom-utils.js';
 import { openPlotEditor, openPlotView } from './plot-editor.js';
+import { collection, query, orderBy, onSnapshot } from 'firebase/firestore';
 
 let unsubscribePlots = null;
 
@@ -44,13 +45,14 @@ function refreshPlotList(state) {
     }
 
     const db = getDb();
-    unsubscribePlots = db.collection("works").doc(state.selectedWorkId)
-        .collection("plots").orderBy("order", "asc")
-        .onSnapshot(snap => {
-            renderPlotCards(snap, container);
-        }, error => {
-            console.error('[PlotList] プロット監視エラー:', error);
-        });
+    const plotsRef = collection(db, "works", state.selectedWorkId, "plots");
+    const q = query(plotsRef, orderBy("order", "asc"));
+
+    unsubscribePlots = onSnapshot(q, (snap) => {
+        renderPlotCards(snap, container);
+    }, (error) => {
+        console.error('[PlotList] プロット監視エラー:', error);
+    });
 }
 
 /**

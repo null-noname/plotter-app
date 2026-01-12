@@ -5,6 +5,19 @@
 import { getDb } from '../../core/firebase.js';
 import { getState } from '../../core/state.js';
 import { autoResizeTextarea } from '../../utils/dom-utils.js';
+import {
+    collection,
+    doc,
+    getDoc,
+    getDocs,
+    addDoc,
+    updateDoc,
+    deleteDoc,
+    query,
+    orderBy,
+    writeBatch,
+    serverTimestamp
+} from 'firebase/firestore';
 
 let currentPlotId = null;
 let currentPlotType = 'normal';
@@ -57,12 +70,13 @@ export async function openPlotView(id) {
     if (!state.selectedWorkId) return;
 
     currentPlotId = id;
+    currentPlotId = id;
     const db = getDb();
-    const doc = await db.collection("works").doc(state.selectedWorkId)
-        .collection("plots").doc(id).get();
+    const plotRef = doc(db, "works", state.selectedWorkId, "plots", id);
+    const docSnap = await getDoc(plotRef);
 
-    if (!doc.exists) return;
-    const data = doc.data();
+    if (!docSnap.exists()) return;
+    const data = docSnap.data();
 
     // 表示切り替え
     document.getElementById('plot-list-view').style.display = 'none';
@@ -122,11 +136,11 @@ export async function openPlotEditor(id = null) {
 
     if (id) {
         const db = getDb();
-        const doc = await db.collection("works").doc(state.selectedWorkId)
-            .collection("plots").doc(id).get();
+        const plotRef = doc(db, "works", state.selectedWorkId, "plots", id);
+        const docSnap = await getDoc(plotRef);
 
-        if (doc.exists) {
-            const data = doc.data();
+        if (docSnap.exists()) {
+            const data = docSnap.data();
             titleInput.value = data.title || "";
             contentInput.value = data.content || "";
             timelineItems = data.timelineItems || [];
@@ -261,16 +275,18 @@ export async function savePlot() {
         };
 
         const db = getDb();
-        const ref = db.collection("works").doc(state.selectedWorkId).collection("plots");
+        const plotsRef = collection(db, "works", state.selectedWorkId, "plots");
 
         let savedId = currentPlotId;
         if (currentPlotId) {
-            await ref.doc(currentPlotId).update(data);
+            const plotRef = doc(db, "works", state.selectedWorkId, "plots", currentPlotId);
+            await updateDoc(plotRef, data);
         } else {
-            const snap = await ref.get();
+            const q = query(plotsRef);
+            const snap = await getDocs(q);
             data.order = snap.size;
-            data.createdAt = fb.firestore.FieldValue.serverTimestamp();
-            const docRef = await ref.add(data);
+            data.createdAt = serverTimestamp();
+            const docRef = await addDoc(plotsRef, data);
             savedId = docRef.id;
         }
         // 保存後は一覧に戻る
@@ -298,8 +314,8 @@ export async function deletePlot(id) {
     const state = getState();
     const db = getDb();
     try {
-        await db.collection("works").doc(state.selectedWorkId)
-            .collection("plots").doc(id).delete();
+        const plotRef = doc(db, "works", state.selectedWorkId, "plots", id);
+        await deleteDoc(plotRef);
     } catch (error) {
         console.error('[PlotEditor] 削除エラー:', error);
     }
@@ -311,12 +327,13 @@ export async function deletePlot(id) {
 export async function movePlot(id, dir) {
     const state = getState();
     const db = getDb();
-    const ref = db.collection("works").doc(state.selectedWorkId).collection("plots");
+    const plotsRef = collection(db, "works", state.selectedWorkId, "plots");
 
     try {
-        const snap = await ref.orderBy("order", "asc").get();
+        const q = query(plotsRef, orderBy("order", "asc"));
+        const snap = await getDocs(q);
         const plots = [];
-        snap.forEach(doc => plots.push({ id: doc.id, ...doc.data() }));
+        snap.forEach(docSnap => plots.push({ id: docSnap.id, ...docSnap.data() }));
 
         const idx = plots.findIndex(p => p.id === id);
         if (idx === -1) return;
@@ -324,9 +341,12 @@ export async function movePlot(id, dir) {
         if (targetIdx < 0 || targetIdx >= plots.length) return;
 
         const other = plots[targetIdx];
-        const batch = db.batch();
-        batch.update(ref.doc(id), { order: targetIdx });
-        batch.update(ref.doc(other.id), { order: idx });
+        const batch = writeBatch(db);
+        const currentRef = doc(db, "works", state.selectedWorkId, "plots", id);
+        const otherRef = doc(db, "works", state.selectedWorkId, "plots", other.id);
+
+        batch.update(currentRef, { order: targetIdx });
+        batch.update(otherRef, { order: idx });
         await batch.commit();
     } catch (error) {
         console.error('[PlotEditor] 並び替えエラー:', error);

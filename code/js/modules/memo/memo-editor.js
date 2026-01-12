@@ -1,6 +1,19 @@
 import { getDb } from '../../core/firebase.js';
 import { getState } from '../../core/state.js';
 import { escapeHtml, autoResizeTextarea } from '../../utils/dom-utils.js';
+import {
+    collection,
+    doc,
+    getDoc,
+    getDocs,
+    addDoc,
+    updateDoc,
+    deleteDoc,
+    query,
+    orderBy,
+    writeBatch,
+    serverTimestamp
+} from 'firebase/firestore';
 
 let currentMemoId = null;
 
@@ -46,10 +59,10 @@ export async function openMemoEditor(id = null) {
     if (id) {
         const state = getState();
         const db = getDb();
-        const doc = await db.collection("works").doc(state.selectedWorkId)
-            .collection("memos").doc(id).get();
-        if (doc.exists) {
-            const data = doc.data();
+        const memoRef = doc(db, "works", state.selectedWorkId, "memos", id);
+        const docSnap = await getDoc(memoRef);
+        if (docSnap.exists()) {
+            const data = docSnap.data();
             titleInput.value = data.title || "";
             tagsInput.value = (data.tags || []).join(', ');
             contentInput.value = data.content || "";
@@ -84,26 +97,27 @@ export async function saveMemo() {
 
     if (!title) return;
 
-    const fb = window.firebase || firebase;
     const data = {
         uid: state.currentUser.uid,
         title: title || "無題",
         tags: tags,
         content: content,
-        updatedAt: fb.firestore.FieldValue.serverTimestamp()
+        updatedAt: serverTimestamp()
     };
 
     const db = getDb();
-    const collection = db.collection("works").doc(state.selectedWorkId).collection("memos");
+    const memosRef = collection(db, "works", state.selectedWorkId, "memos");
 
     try {
         if (currentMemoId) {
-            await collection.doc(currentMemoId).update(data);
+            const memoRef = doc(db, "works", state.selectedWorkId, "memos", currentMemoId);
+            await updateDoc(memoRef, data);
         } else {
-            const snap = await collection.get();
+            const q = query(memosRef);
+            const snap = await getDocs(q);
             data.order = snap.size;
-            data.createdAt = fb.firestore.FieldValue.serverTimestamp();
-            await collection.add(data);
+            data.createdAt = serverTimestamp();
+            await addDoc(memosRef, data);
         }
         // 保存後は一覧に戻る
         closeMemoEditor();
@@ -121,8 +135,8 @@ export async function deleteMemo(id) {
     const state = getState();
     const db = getDb();
     try {
-        await db.collection("works").doc(state.selectedWorkId)
-            .collection("memos").doc(id).delete();
+        const memoRef = doc(db, "works", state.selectedWorkId, "memos", id);
+        await deleteDoc(memoRef);
     } catch (error) {
         console.error('[MemoEditor] 削除エラー:', error);
     }
@@ -134,12 +148,13 @@ export async function deleteMemo(id) {
 export async function moveMemo(id, dir) {
     const state = getState();
     const db = getDb();
-    const collection = db.collection("works").doc(state.selectedWorkId).collection("memos");
+    const memosRef = collection(db, "works", state.selectedWorkId, "memos");
 
     try {
-        const snap = await collection.orderBy("order", "asc").get();
+        const q = query(memosRef, orderBy("order", "asc"));
+        const snap = await getDocs(q);
         const memos = [];
-        snap.forEach(doc => memos.push({ id: doc.id, ...doc.data() }));
+        snap.forEach(docSnap => memos.push({ id: docSnap.id, ...docSnap.data() }));
 
         const idx = memos.findIndex(m => m.id === id);
         if (idx === -1) return;
@@ -147,9 +162,12 @@ export async function moveMemo(id, dir) {
         if (targetIdx < 0 || targetIdx >= memos.length) return;
 
         const other = memos[targetIdx];
-        const batch = db.batch();
-        batch.update(collection.doc(id), { order: targetIdx });
-        batch.update(collection.doc(other.id), { order: idx });
+        const batch = writeBatch(db);
+        const currentRef = doc(db, "works", state.selectedWorkId, "memos", id);
+        const otherRef = doc(db, "works", state.selectedWorkId, "memos", other.id);
+
+        batch.update(currentRef, { order: targetIdx });
+        batch.update(otherRef, { order: idx });
         await batch.commit();
     } catch (error) {
         console.error('[MemoEditor] 並び替えエラー:', error);

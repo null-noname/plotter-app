@@ -5,6 +5,14 @@
 import { getDb, getAuth } from '../../core/firebase.js';
 import { getState, setState, subscribe } from '../../core/state.js';
 import { escapeHtml } from '../../utils/dom-utils.js';
+import {
+    doc,
+    getDoc,
+    collection,
+    addDoc,
+    updateDoc,
+    serverTimestamp
+} from 'firebase/firestore';
 
 let currentEditingId = null;
 let renderedWorkId = null; // タブに現在描画されている作品ID
@@ -114,9 +122,11 @@ async function renderWorkInfoTab(workId) {
     // データ読み込み
     const db = getDb();
     try {
-        const doc = await db.collection("works").doc(workId).get();
-        if (doc.exists) {
-            const data = doc.data();
+        const workRef = doc(db, "works", workId);
+        const docSnap = await getDoc(workRef);
+
+        if (docSnap.exists()) {
+            const data = docSnap.data();
             renderWorkView(container, data);
             populateForm(formContainer, 'info', data);
         } else {
@@ -324,23 +334,27 @@ async function saveWorkInfo(isNew) {
         status: getRadioValue(container, p, 'status'),
         ai: getRadioValue(container, p, 'ai'),
         rating: Array.from(container.querySelectorAll(`input[name="${p}-rating"]:checked`)).map(cb => cb.value),
-        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+        rating: Array.from(container.querySelectorAll(`input[name="${p}-rating"]:checked`)).map(cb => cb.value),
+        updatedAt: serverTimestamp()
     };
 
     const db = getDb();
     try {
         if (!isNew && currentEditingId) {
             // 更新
-            await db.collection("works").doc(currentEditingId).update(data);
+            const workRef = doc(db, "works", currentEditingId);
+            await updateDoc(workRef, data);
+
             // 保存成功通知を削除し、閲覧モードに戻る
             renderWorkInfoTab(currentEditingId);
         } else {
             // 新規作成
             data.uid = auth.currentUser.uid;
-            data.createdAt = firebase.firestore.FieldValue.serverTimestamp();
+            data.createdAt = serverTimestamp();
             data.pinned = false;
 
-            const docRef = await db.collection("works").add(data);
+            const worksRef = collection(db, "works");
+            const docRef = await addDoc(worksRef, data);
             // 保存成功通知を削除
 
             // リスト表示に戻し、プロットへ移動

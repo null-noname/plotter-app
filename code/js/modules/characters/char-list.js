@@ -5,6 +5,7 @@
 import { getDb } from '../../core/firebase.js';
 import { getState, setState, subscribe } from '../../core/state.js';
 import { escapeHtml, clearContainer } from '../../utils/dom-utils.js';
+import { collection, query, orderBy, onSnapshot } from 'firebase/firestore';
 
 import { openCharEditor, openCharView, moveChar, deleteChar } from './char-editor.js';
 
@@ -45,13 +46,14 @@ function refreshCharList(state) {
     }
 
     const db = getDb();
-    unsubscribeChars = db.collection("works").doc(state.selectedWorkId)
-        .collection("characters").orderBy("order", "asc")
-        .onSnapshot(snap => {
-            renderCharCards(snap, container);
-        }, error => {
-            console.error('[CharList] 登場人物監視エラー:', error);
-        });
+    const charsRef = collection(db, "works", state.selectedWorkId, "characters");
+    const q = query(charsRef, orderBy("order", "asc"));
+
+    unsubscribeChars = onSnapshot(q, (snap) => {
+        renderCharCards(snap, container);
+    }, (error) => {
+        console.error('[CharList] 登場人物監視エラー:', error);
+    });
 }
 
 /**

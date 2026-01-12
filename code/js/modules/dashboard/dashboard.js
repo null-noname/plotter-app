@@ -2,6 +2,14 @@ import { getDb } from '../../core/firebase.js';
 import { getState, setState, subscribe } from '../../core/state.js';
 import { escapeHtml, clearContainer, formatDate } from '../../utils/dom-utils.js';
 import { initWorkEditor, openNewWorkEditor } from './work-editor.js';
+import {
+    collection,
+    query,
+    where,
+    onSnapshot,
+    doc,
+    updateDoc
+} from 'firebase/firestore';
 
 let unsubscribeWorks = null;
 let allWorksCache = [];
@@ -58,16 +66,19 @@ function refreshWorkList(state) {
     if (!state.currentUser) return;
 
     const db = getDb();
-    // 取得を安定させるためorderByを一旦削除（インデックスエラー回避）
-    unsubscribeWorks = db.collection("works")
-        .where("uid", "==", state.currentUser.uid)
-        .onSnapshot(snap => {
-            allWorksCache = [];
-            snap.forEach(doc => allWorksCache.push({ id: doc.id, ...doc.data() }));
-            renderWorkCards(allWorksCache, container);
-        }, error => {
-            console.error('[Dashboard] 作品一覧監視エラー:', error);
+    // Modular SDK: query, where, onSnapshot
+    const worksRef = collection(db, "works");
+    const q = query(worksRef, where("uid", "==", state.currentUser.uid));
+
+    unsubscribeWorks = onSnapshot(q, (snap) => {
+        allWorksCache = [];
+        snap.forEach(docSnap => {
+            allWorksCache.push({ id: docSnap.id, ...docSnap.data() });
         });
+        renderWorkCards(allWorksCache, container);
+    }, (error) => {
+        console.error('[Dashboard] 作品一覧監視エラー:', error);
+    });
 }
 
 /**
@@ -125,7 +136,7 @@ function createWorkCard(work) {
                 <span>作成日: ${formatDate(work.createdAt)}</span>
                 <span>更新日: ${formatDate(work.updatedAt, true)}</span>
             </div>
-            <button class="btn-retro edit-btn" style="font-size:0.8rem; padding:4px 12px; background:transparent; color:#fff; border:1px solid #fff;">編集</button>
+            <button class="btn-retro blue edit-btn" style="font-size:0.8rem; padding:4px 12px;">編集</button>
         </div>
     `;
 
@@ -168,7 +179,9 @@ function createWorkCard(work) {
 async function togglePin(id, currentPinned) {
     const db = getDb();
     try {
-        await db.collection("works").doc(id).update({
+        // Modular SDK: updateDoc
+        const workRef = doc(db, "works", id);
+        await updateDoc(workRef, {
             pinned: !currentPinned
         });
     } catch (error) {

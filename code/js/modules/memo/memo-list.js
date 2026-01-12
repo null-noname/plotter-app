@@ -3,8 +3,10 @@
  */
 
 import { getDb } from '../../core/firebase.js';
-import { getState, setState, subscribe } from '../../core/state.js';
+import { subscribe } from '../../core/state.js';
 import { escapeHtml, clearContainer } from '../../utils/dom-utils.js';
+import { collection, query, orderBy, onSnapshot } from 'firebase/firestore';
+import { openMemoEditor } from './memo-editor.js';
 
 let unsubscribeMemos = null;
 let activeTagFilter = null;
@@ -43,17 +45,17 @@ function refreshMemoList(state) {
     }
 
     const db = getDb();
-    // 共通メモから作品別のメモへ修正
-    unsubscribeMemos = db.collection("works").doc(state.selectedWorkId)
-        .collection("memos").orderBy("order", "asc")
-        .onSnapshot(snap => {
-            allMemosCache = [];
-            snap.forEach(doc => allMemosCache.push({ id: doc.id, ...doc.data() }));
-            renderMemoTags();
-            renderMemoCards();
-        }, error => {
-            console.error('[MemoList] メモ監視エラー:', error);
-        });
+    const memosRef = collection(db, "works", state.selectedWorkId, "memos");
+    const q = query(memosRef, orderBy("order", "asc"));
+
+    unsubscribeMemos = onSnapshot(q, (snap) => {
+        allMemosCache = [];
+        snap.forEach(docSnap => allMemosCache.push({ id: docSnap.id, ...docSnap.data() }));
+        renderMemoTags();
+        renderMemoCards();
+    }, (error) => {
+        console.error('[MemoList] メモ監視エラー:', error);
+    });
 }
 
 /**
@@ -183,6 +185,7 @@ function createMemoCard(memo) {
 
     card.querySelector('.collapsible-header').addEventListener('click', toggle);
     card.querySelector('.collapsible-content').addEventListener('click', (e) => {
+        // コンテンツ内のクリックでも、サマリーモード時のみトグルの対象にする
         if (card.classList.contains('collapsed')) {
             toggle();
         }
