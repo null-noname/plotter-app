@@ -25,6 +25,8 @@ if (!firebase.apps.length) {
     firebase.initializeApp(firebaseConfig);
 }
 
+const app = firebase.app();
+
 // Export Modular Instances
 // Default app is used implicitly or we can pass firebase.app()
 // FIX: Explicitly pass the app instance to ensure connection
