@@ -3,7 +3,7 @@
  * HTMLのインラインonclickを廃止し、状態(state)に基づいて表示を制御します。
  */
 
-import { getDb } from './firebase.js';
+// import { getDb } from './firebase.js'; // Unused
 import { getState, setState, subscribe } from './state.js';
 
 /**
