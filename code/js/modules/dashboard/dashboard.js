@@ -79,6 +79,16 @@ function refreshWorkList(state) {
         renderWorkCards(allWorksCache, container);
     }, (error) => {
         console.error('[Dashboard] 作品一覧監視エラー:', error);
+        container.innerHTML = `
+            <div style="padding:20px; color:#ff4444; border:1px solid #ff4444; border-radius:8px; background:rgba(255,0,0,0.1);">
+                <h3 style="margin:0 0 10px 0;">読み込みエラー</h3>
+                <p>データの取得に失敗しました。<br>
+                ${escapeHtml(error.message)}</p>
+                <p style="font-size:0.8rem; margin-top:10px; color:#ccc;">
+                    ※ 解決しない場合は、ページをリロードするか、一度ログアウトして再ログインをお試しください。
+                </p>
+            </div>
+        `;
     });
 }
 

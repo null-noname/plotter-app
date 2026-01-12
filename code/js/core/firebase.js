@@ -27,11 +27,12 @@ if (!firebase.apps.length) {
 
 // Export Modular Instances
 // Default app is used implicitly or we can pass firebase.app()
-export const db = getFirestore();
-export const auth = getAuthSDK();
-export const storage = getStorageSDK();
+// FIX: Explicitly pass the app instance to ensure connection
+export const db = getFirestore(app);
+export const auth = getAuthSDK(app);
+export const storage = getStorageSDK(app);
 
-console.log('[Firebase] Initialized via Hybrid (Compat+Modular)');
+console.log('[Firebase] Initialized via Hybrid (Compat+Modular) with Explicit App');
 
 // Getter functions
 export function getDb() { return db; }
