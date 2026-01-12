@@ -38,3 +38,7 @@ export function getDb() { return db; }
 export function getAuth() { return auth; }
 export function getStorage() { return storage; }
 
+export function initFirebase() {
+    console.log('[Firebase] Explicit initialization called (already initialized at module level).');
+}
+
