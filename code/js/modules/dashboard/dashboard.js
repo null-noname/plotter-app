@@ -20,7 +20,7 @@ let allWorksCache = [];
 export function initDashboard() {
     // 作品エディタの初期化
     initWorkEditor();
-    console.log('[Dashboard] Initialized');
+    console.log('[Dashboard] Initialized v2 (Blue Btn Fix)');
 
     // 状態を監視して、TOPタブが表示されたらデータを取得
     subscribe((state) => {
@@ -137,10 +137,10 @@ function createWorkCard(work) {
                 <span>作成日: ${formatDate(work.createdAt)}</span>
                 <span>更新日: ${formatDate(work.updatedAt, true)}</span>
             </div>
-            <button class="btn-retro blue edit-btn" style="font-size:0.8rem; padding:4px 12px;">編集</button>
+            <button class="btn-retro btn-edit blue" style="background-color: #1565c0 !important; color: #fff !important; font-size:0.8rem; padding:4px 12px;">編集</button>
         </div>
     `;
-    // Force rebuild hash change
+    // Force rebuild hash change v2
 
     // カードクリック時の挙動 (ボタン以外)
     card.addEventListener('click', (e) => {
