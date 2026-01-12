@@ -1,9 +1,15 @@
 /**
- * auth.js - 認証ロジックの管理
+ * auth.js - 認証ロジックの管理 (Modular SDK)
  * Googleログイン、ログアウト、認証状態の監視を担当します。
  */
 
 import { getAuth } from '../core/firebase.js';
+import {
+    GoogleAuthProvider,
+    signInWithPopup,
+    signOut,
+    onAuthStateChanged
+} from 'firebase/auth';
 import { setState } from '../core/state.js';
 
 /**
@@ -13,7 +19,6 @@ import { setState } from '../core/state.js';
 export function initAuth() {
     const auth = getAuth();
     const loginBtn = document.getElementById('google-login-btn');
-    const logoutBtn = document.getElementById('logout-btn-legacy'); // 後で調整
 
     // ログインボタンのイベント登録
     if (loginBtn) {
@@ -21,14 +26,13 @@ export function initAuth() {
     }
 
     // ログアウトボタン（ヘッダー等）のボタンがあれば登録
-    // ※現在は一旦、名前指定で取得。HTML側の構造に合わせて調整。
     const topLogoutBtn = document.querySelector('.main-header button');
     if (topLogoutBtn) {
         topLogoutBtn.addEventListener('click', handleLogout);
     }
 
-    // 認証状態の監視
-    auth.onAuthStateChanged(user => {
+    // 認証状態の監視 (Modular Syntax)
+    onAuthStateChanged(auth, (user) => {
         if (user) {
             console.log('[Auth] ログイン完了:', user.displayName);
             setState({ currentUser: user, isAuthReady: true });
@@ -44,9 +48,9 @@ export function initAuth() {
  */
 export async function handleLogin() {
     const auth = getAuth();
-    const provider = new firebase.auth.GoogleAuthProvider();
+    const provider = new GoogleAuthProvider();
     try {
-        await auth.signInWithPopup(provider);
+        await signInWithPopup(auth, provider);
     } catch (error) {
         console.error('[Auth] ログインエラー:', error);
     }
@@ -58,7 +62,7 @@ export async function handleLogin() {
 export async function handleLogout() {
     const auth = getAuth();
     try {
-        await auth.signOut();
+        await signOut(auth);
     } catch (error) {
         console.error('[Auth] ログアウトエラー:', error);
     }
