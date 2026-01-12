@@ -128,6 +128,19 @@ function renderWorkCards(works, container) {
 /**
  * 個別の作品カード要素を作成
  */
+
+
+// Helper to safely attach listener
+function safeAttach(element, selector, event, handler) {
+    const target = element.querySelector(selector);
+    if (target) {
+        target.addEventListener(event, handler);
+    } else {
+        console.warn(`[Dashboard] Element not found for selector: ${selector}`);
+    }
+}
+
+// In createWorkCard, replace manual addEventListener with safe checks or just add if()
 function createWorkCard(work) {
     const card = document.createElement('div');
     card.className = 'work-card';
@@ -150,7 +163,6 @@ function createWorkCard(work) {
             <button class="btn-retro btn-edit blue" style="background-color: #1565c0 !important; color: #fff !important; font-size:0.8rem; padding:4px 12px;">編集</button>
         </div>
     `;
-    // Force rebuild hash change v2
 
     // カードクリック時の挙動 (ボタン以外)
     card.addEventListener('click', (e) => {
@@ -164,23 +176,26 @@ function createWorkCard(work) {
         setState({ currentTab: nextTab });
     });
 
-    // 編集ボタンの挙動：カードクリックと同じ（作品を選択して前回タブへ）
+    // 編集ボタンの挙動
     const editBtn = card.querySelector('.edit-btn');
-    editBtn.addEventListener('click', (e) => {
-        e.stopPropagation();
-
-        setState({ selectedWorkId: work.id });
-        const state = getState();
-        const nextTab = work.lastTab || state.lastActiveTab || 'plot';
-        setState({ currentTab: nextTab });
-    });
+    if (editBtn) {
+        editBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            setState({ selectedWorkId: work.id });
+            const state = getState();
+            const nextTab = work.lastTab || state.lastActiveTab || 'plot';
+            setState({ currentTab: nextTab });
+        });
+    }
 
     // スターボタンの挙動
     const starBtn = card.querySelector('.star-btn');
-    starBtn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        togglePin(work.id, work.pinned);
-    });
+    if (starBtn) {
+        starBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            togglePin(work.id, work.pinned);
+        });
+    }
 
     return card;
 }
