@@ -4,7 +4,7 @@ export default defineConfig({
     root: '.',
     base: './',
     build: {
-        outDir: 'docs',
+        outDir: '../docs',
         emptyOutDir: true,
         chunkSizeWarningLimit: 2000,
     },
