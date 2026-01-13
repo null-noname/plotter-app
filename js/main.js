@@ -15,7 +15,7 @@ import { initMemoEditor } from './modules/memo/memo-editor.js';
 import { initDashboard } from './modules/dashboard/dashboard.js';
 
 document.addEventListener('DOMContentLoaded', async () => {
-    console.log('[Main] アプリケーションの初期化を開始します...');
+    console.log('[Plotter] アプリケーションの初期化を開始します...');
 
     try {
         // 1. Firebaseの初期化
@@ -36,9 +36,9 @@ document.addEventListener('DOMContentLoaded', async () => {
         initMemoEditor();
         initDashboard();
 
-        console.log('[Main] 初期化プロセスが完了しました。');
+        console.log('[Plotter] 初期化プロセスが完了しました。');
     } catch (error) {
-        console.error('[Main] 初期化中にエラーが発生しました:', error);
+        console.error('[Plotter] 初期化中にエラーが発生しました:', error);
     }
 });
 
