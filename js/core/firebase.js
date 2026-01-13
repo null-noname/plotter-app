@@ -22,14 +22,20 @@ let storage = null;
  * Firebaseを初期化し、DB/Authのインスタンスを用意します。
  */
 export function initFirebase() {
-    if (!firebase.apps.length) {
-        app = firebase.initializeApp(firebaseConfig);
+    // Check if 'plotter' app is already initialized
+    const existingApp = firebase.apps.find(a => a.name === 'plotter');
+
+    if (!existingApp) {
+        // Initialize as named app to isolate Auth Persistence from Editor (Default App)
+        app = firebase.initializeApp(firebaseConfig, 'plotter');
     } else {
-        app = firebase.app();
+        app = firebase.app('plotter');
     }
-    db = firebase.firestore();
-    auth = firebase.auth();
-    storage = firebase.storage();
+
+    // Use instance-specific services
+    db = app.firestore();
+    auth = app.auth();
+    storage = app.storage();
 
     // 永続性の設定 (ブラウザを閉じてもログインを維持)
     auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
