@@ -12,6 +12,9 @@ import { setState } from '../core/state.js';
  */
 export function initAuth() {
     const auth = getAuth();
+    // 起動時にも永続性を明示（念のため）
+    auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
+
     const loginBtn = document.getElementById('google-login-btn');
     const logoutBtn = document.getElementById('logout-btn-legacy'); // 後で調整
 
