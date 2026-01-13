@@ -46,6 +46,8 @@ export async function handleLogin() {
     const auth = getAuth();
     const provider = new firebase.auth.GoogleAuthProvider();
     try {
+        // ログイン前に永続性を明示的にセットして待機
+        await auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
         await auth.signInWithPopup(provider);
     } catch (error) {
         console.error('[Auth] ログインエラー:', error);

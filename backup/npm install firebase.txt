@@ -1,0 +1,20 @@
+npm install firebase
+
+～～～～
+// Import the functions you need from the SDKs you need
+import { initializeApp } from "firebase/app";
+// TODO: Add SDKs for Firebase products that you want to use
+// https://firebase.google.com/docs/web/setup#available-libraries
+
+// Your web app's Firebase configuration
+const firebaseConfig = {
+  apiKey: "AIzaSyDealKaPyIcqUIujJhvsWERxGm0zSBD1jw",
+  authDomain: "plotter-app-dbb21.firebaseapp.com",
+  projectId: "plotter-app-dbb21",
+  storageBucket: "plotter-app-dbb21.firebasestorage.app",
+  messagingSenderId: "483491444496",
+  appId: "1:483491444496:web:56fa556a709348339fd795"
+};
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
