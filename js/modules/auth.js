@@ -3,7 +3,16 @@
  * Googleログイン、ログアウト、認証状態の監視を担当します。
  */
 
-import { getAuth } from '../core/firebase.js';
+import {
+    getAuth,
+    setPersistence,
+    browserSessionPersistence,
+    signInWithPopup,
+    signOut,
+    onAuthStateChanged,
+    GoogleAuthProvider
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+import { initFirebase } from '../core/firebase.js';
 import { setState } from '../core/state.js';
 
 /**
@@ -11,26 +20,23 @@ import { setState } from '../core/state.js';
  * ログインボタンのイベント設定と認証状態の監視を開始します。
  */
 export function initAuth() {
-    const auth = getAuth();
-    // 起動時にも永続性を明示（念のため） -> 削除: ログイン時に設定済みであり、ここで呼ぶと競合の可能性があるため
-
-    const loginBtn = document.getElementById('google-login-btn');
-    const logoutBtn = document.getElementById('logout-btn-legacy'); // 後で調整
+    const { app } = initFirebase();
+    const auth = getAuth(app);
 
     // ログインボタンのイベント登録
+    const loginBtn = document.getElementById('google-login-btn');
     if (loginBtn) {
         loginBtn.addEventListener('click', handleLogin);
     }
 
     // ログアウトボタン（ヘッダー等）のボタンがあれば登録
-    // ※現在は一旦、名前指定で取得。HTML側の構造に合わせて調整。
     const topLogoutBtn = document.querySelector('.main-header button');
     if (topLogoutBtn) {
         topLogoutBtn.addEventListener('click', handleLogout);
     }
 
     // 認証状態の監視
-    auth.onAuthStateChanged(user => {
+    onAuthStateChanged(auth, (user) => {
         if (user) {
             console.log('[Auth] ログイン完了:', user.displayName);
             setState({ currentUser: user, isAuthReady: true });
@@ -45,12 +51,13 @@ export function initAuth() {
  * Googleログインの実行
  */
 export async function handleLogin() {
-    const auth = getAuth();
-    const provider = new firebase.auth.GoogleAuthProvider();
+    const { app } = initFirebase();
+    const auth = getAuth(app);
+    const provider = new GoogleAuthProvider();
+
     try {
-        // ログイン前に永続性を明示的にセットして待機
-        await auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
-        await auth.signInWithPopup(provider);
+        await setPersistence(auth, browserSessionPersistence);
+        await signInWithPopup(auth, provider);
     } catch (error) {
         console.error('[Auth] ログインエラー:', error);
     }
@@ -60,9 +67,10 @@ export async function handleLogin() {
  * ログアウトの実行
  */
 export async function handleLogout() {
-    const auth = getAuth();
+    const { app } = initFirebase();
+    const auth = getAuth(app);
     try {
-        await auth.signOut();
+        await signOut(auth);
     } catch (error) {
         console.error('[Auth] ログアウトエラー:', error);
     }
