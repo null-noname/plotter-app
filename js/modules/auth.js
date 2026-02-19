@@ -25,6 +25,15 @@ export function initAuth() {
         topLogoutBtn.addEventListener('click', handleLogout);
     }
 
+    // リダイレクト結果の処理（ログイン成功/失敗のハンドリング）
+    auth.getRedirectResult().then((result) => {
+        if (result.user) {
+            console.log('[Auth] リダイレクトログイン成功:', result.user.displayName);
+        }
+    }).catch((error) => {
+        console.error('[Auth] リダイレクトログインエラー:', error);
+    });
+
     // 認証状態の監視
     auth.onAuthStateChanged((user) => {
         if (user) {
@@ -47,9 +56,10 @@ export async function handleLogin() {
 
     try {
         await auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
-        await auth.signInWithPopup(provider);
+        // WebView対応のため Redirect を使用
+        await auth.signInWithRedirect(provider);
     } catch (error) {
-        console.error('[Auth] ログインエラー:', error);
+        console.error('[Auth] ログイン開始エラー:', error);
     }
 }
 
