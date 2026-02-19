@@ -23,13 +23,13 @@ let storage = null;
  */
 export function initFirebase() {
     // Check if 'plotter' app is already initialized
-    const existingApp = firebase.apps.find(a => a.name === 'plotter');
+    const existingApp = firebase.apps.find(a => a.name === 'PlotterApp');
 
     if (!existingApp) {
         // Initialize as named app to isolate Auth Persistence from Editor (Default App)
-        app = firebase.initializeApp(firebaseConfig, 'plotter');
+        app = firebase.initializeApp(firebaseConfig, 'PlotterApp');
     } else {
-        app = firebase.app('plotter');
+        app = firebase.app('PlotterApp');
     }
 
     // Use instance-specific services
@@ -37,8 +37,8 @@ export function initFirebase() {
     auth = app.auth();
     storage = app.storage();
 
-    // 永続性の設定 (ブラウザを閉じてもログインを維持)
-    auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
+    // Persistence is handled in auth.js using Modular SDK
+    // to ensure await completion before login.
 
     console.log('[Firebase] 初期化完了');
     return { app, db, auth, storage };

@@ -3,15 +3,6 @@
  * Googleログイン、ログアウト、認証状態の監視を担当します。
  */
 
-import {
-    getAuth,
-    setPersistence,
-    browserSessionPersistence,
-    signInWithPopup,
-    signOut,
-    onAuthStateChanged,
-    GoogleAuthProvider
-} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 import { initFirebase } from '../core/firebase.js';
 import { setState } from '../core/state.js';
 
@@ -20,8 +11,7 @@ import { setState } from '../core/state.js';
  * ログインボタンのイベント設定と認証状態の監視を開始します。
  */
 export function initAuth() {
-    const { app } = initFirebase();
-    const auth = getAuth(app);
+    const { auth } = initFirebase();
 
     // ログインボタンのイベント登録
     const loginBtn = document.getElementById('google-login-btn');
@@ -36,7 +26,7 @@ export function initAuth() {
     }
 
     // 認証状態の監視
-    onAuthStateChanged(auth, (user) => {
+    auth.onAuthStateChanged((user) => {
         if (user) {
             console.log('[Auth] ログイン完了:', user.displayName);
             setState({ currentUser: user, isAuthReady: true });
@@ -51,13 +41,13 @@ export function initAuth() {
  * Googleログインの実行
  */
 export async function handleLogin() {
-    const { app } = initFirebase();
-    const auth = getAuth(app);
-    const provider = new GoogleAuthProvider();
+    const { auth } = initFirebase();
+    const provider = new firebase.auth.GoogleAuthProvider();
+    provider.setCustomParameters({ prompt: 'select_account' });
 
     try {
-        await setPersistence(auth, browserSessionPersistence);
-        await signInWithPopup(auth, provider);
+        await auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
+        await auth.signInWithPopup(provider);
     } catch (error) {
         console.error('[Auth] ログインエラー:', error);
     }
@@ -67,10 +57,9 @@ export async function handleLogin() {
  * ログアウトの実行
  */
 export async function handleLogout() {
-    const { app } = initFirebase();
-    const auth = getAuth(app);
+    const { auth } = initFirebase();
     try {
-        await signOut(auth);
+        await auth.signOut();
     } catch (error) {
         console.error('[Auth] ログアウトエラー:', error);
     }
